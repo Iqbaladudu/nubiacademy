@@ -1,0 +1,196 @@
+"use client";
+import { ChevronsDown, Github, Menu } from "lucide-react";
+import React from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+import { Separator } from "../ui/separator";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "../ui/navigation-menu";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import { ToggleTheme } from "./toggle-theme";
+import { Icn } from "../ui/icn";
+
+interface RouteProps {
+  href: string;
+  label: string;
+}
+
+interface FeatureProps {
+  title: string;
+  description: string;
+}
+
+const routeList: RouteProps[] = [
+  {
+    href: "#",
+    label: "Tentang Kami",
+  },
+  {
+    href: "#",
+    label: "Kontak",
+  },
+  {
+    href: "#",
+    label: "Pertanyaan",
+  },
+];
+
+const featureList: FeatureProps[] = [
+  {
+    title: "Belajar Prompt Engineering",
+    description:
+      "Menjadi prompter chatbot handal, maksimalkan potensi kamu dengan ChatGPT dan sejenisnya.",
+  },
+  {
+    title: "Belajar Canva untuk Pemula",
+    description:
+      "Menjadi desainer sat set dengan menguasai Canva, dijamin pekerjaanmu akan wuss.",
+  },
+];
+
+export const Navbar = () => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  return (
+    <header className="bg-opacity-15 w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto sticky rounded-2xl flex justify-between items-center p-2 bg-card">
+      <Link href="/" className="font-bold text-lg flex items-center">
+        NUBI ACADEMY
+      </Link>
+      {/* <!-- Mobile --> */}
+      <div className="flex items-center lg:hidden">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Menu
+              onClick={() => setIsOpen(!isOpen)}
+              className="cursor-pointer lg:hidden"
+            />
+          </SheetTrigger>
+
+          <SheetContent
+            side="left"
+            className="flex flex-col justify-between rounded-tr-2xl rounded-br-2xl bg-card border-secondary"
+          >
+            <div>
+              <SheetHeader className="mb-4 ml-4">
+                <SheetTitle className="flex items-center">
+                  <Link href="/" className="flex items-center">
+                    NUBI ACADEMY
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-2">
+                {routeList.map(({ href, label }) => (
+                  <Button
+                    key={href}
+                    onClick={() => setIsOpen(false)}
+                    asChild
+                    variant="ghost"
+                    className="justify-start text-base"
+                  >
+                    <Link href={href}>{label}</Link>
+                  </Button>
+                ))}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="justify-start text-base"
+                >
+                  <Link href="/masuk">Masuk</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="justify-start text-base"
+                >
+                  <Link href="/daftar">Daftar</Link>
+                </Button>
+              </div>
+            </div>
+
+            <SheetFooter className="flex-col sm:flex-col justify-start items-start">
+              <Separator className="mb-2" />
+
+              <ToggleTheme />
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* <!-- Desktop --> */}
+      <NavigationMenu className="hidden lg:block mx-auto">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger className="bg-card text-base">
+              Belajar Sekarang
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="grid w-[600px] grid-cols-1 gap-5 p-4">
+                <ul className="flex flex-col gap-2">
+                  {featureList.map(({ title, description }) => (
+                    <li
+                      key={title}
+                      className="rounded-md p-3 text-sm hover:bg-muted cursor-pointer"
+                    >
+                      <p className="mb-1 font-semibold leading-none text-foreground">
+                        {title}
+                      </p>
+                      <p className="line-clamp-2 text-muted-foreground">
+                        {description}
+                      </p>
+                    </li>
+                  ))}
+                  <Link href={"/kelas"}>
+                    <li className="rounded-md p-3 text-sm hover:bg-muted cursor-pointer flex flex-row justify-between items-center">
+                      <div className="">
+                        <p className="mb-1 font-semibold leading-none text-foreground">
+                          Selengkapnya
+                        </p>
+                        <p className="line-clamp-2 text-muted-foreground">
+                          Nikmati akses belajar tanpa batas di Nubi Academy
+                        </p>
+                      </div>
+                      <Icn name="MoveRight" color="black" size={24} />
+                    </li>
+                  </Link>
+                </ul>
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            {routeList.map(({ href, label }) => (
+              <NavigationMenuLink key={label} asChild>
+                <Link href={href} className="text-base px-2">
+                  {label}
+                </Link>
+              </NavigationMenuLink>
+            ))}
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+
+      <div className="hidden lg:flex">
+        <ToggleTheme />
+        <Button asChild className="mx-3">
+          <Link href="/masuk">Masuk</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/daftar">Daftar</Link>
+        </Button>
+      </div>
+    </header>
+  );
+};
