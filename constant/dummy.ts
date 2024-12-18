@@ -1,4 +1,4 @@
-interface CourseType {
+export interface CourseType {
   id: number;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ interface CourseType {
   slug: string;
 }
 
-function generateSlug(title: string): string {
+export function generateSlug(title: string): string {
   return title
     .toLowerCase()
     .replace(/\s+/g, "-")

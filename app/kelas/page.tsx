@@ -1,17 +1,8 @@
 import { Navbar } from "@/components/layout/navbar";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Icn } from "@/components/ui/icn";
+import { KelasCard } from "@/components/ui/kelasCard";
 import { Label } from "@/components/ui/label";
-import { dummyCourses } from "@/constant/dummy";
-import { formatToK } from "@/util/numberToKFormatter";
 import { Metadata } from "next";
-import Image from "next/image";
 
 interface LevelType {
   label: string;
@@ -120,39 +111,7 @@ export default function Kelas() {
             ))}
           </div>
         </aside>
-        <main className="col-span-12 lg:col-span-10">
-          <div className="mt-10 mb-2 text-xl font-semi-bold">
-            Kelas yang tersedia
-          </div>
-          <div className=" flex justify-start gap-4 w-full flex-wrap">
-            {dummyCourses.map((data) => (
-              <Card key={data.id} className="border shadow-none cursor-pointer">
-                <CardHeader className="">
-                  <div className="relative w-[250px] h-[170px] overflow-hidden">
-                    <p className="absolute bottom-0 left-0 text-xs p-[0.5] bg-black bg-opacity-20 text-white">
-                      {data.duration}
-                    </p>
-                    <img
-                      src={data.imageUrl}
-                      alt={data.title}
-                      className="object-cover h-full w-full rounded-md"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="h-[4rem] max-w-[250px]">
-                  <p>{data.title}</p>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <p>IDR {formatToK(data.price)}</p>
-                  <div className="flex gap-1">
-                    <Icn name="ArrowUpNarrowWide" size={20} color="black" />
-                    <p>{data.level}</p>
-                  </div>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </main>
+        <KelasCard />
       </main>
     </section>
   );
