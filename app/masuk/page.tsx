@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "Masuk | Nubi Academy",
 };
 
-export default function Login() {
-  return <LoginPage />;
+export default function Login({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  return <LoginPage searchParams={searchParams} />;
 }

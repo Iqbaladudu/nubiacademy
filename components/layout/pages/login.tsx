@@ -4,7 +4,13 @@ import { LoginForm } from "../sections/loginForm";
 import { Button } from "@/components/ui/button";
 import { Icn } from "@/components/ui/icn";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { from, username } = await searchParams;
+
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="absolute container h-9 top-9 flex justify-between">
@@ -14,17 +20,21 @@ export default function LoginPage() {
           </Link>
         </Button>
         <Button variant={"ghost"} className="hidden md:flex" asChild>
-          <Link href={"/"}>Daftar</Link>
+          <Link href={"/daftar"}>Daftar</Link>
         </Button>
       </div>
       <div className="container h-[800px] my-auto mx-auto flex justify-center items-center">
         <div className="w-[90%] md:w-[50%] lg:w-[25%]">
           <div className="flex flex-col space-y-2 mb-3 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Masuk ke Nubi Academy
+              {from === "register-success" && username
+                ? `Halo ${username}, Selamat Datang di Nubi Academy!`
+                : "Masuk ke Nubi Academy"}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Pastikan kamu memasukkan email dan kata sandi yang benar
+              {from === "register-success" && username
+                ? "Silahkan masuk menggunakan email dan kata sandi yang telah kamu daftarkan"
+                : "Pastikan kamu memasukkan email dan kata sandi yang benar"}
             </p>
           </div>
           <LoginForm />
@@ -48,7 +58,7 @@ export default function LoginPage() {
           <div className="flex flex-col justify-center items-center mt-4">
             <p className="text-muted-foreground">Belum punya akun?</p>
             <Button variant={"outline"} asChild>
-              <Link href={"/"}>Daftar sekarang</Link>
+              <Link href={"/daftar"}>Daftar sekarang</Link>
             </Button>
           </div>
         </div>

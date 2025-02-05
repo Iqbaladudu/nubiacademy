@@ -1,6 +1,6 @@
 "use client";
 import { ChevronsDown, Github, Menu } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +22,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { ToggleTheme } from "./toggle-theme";
 import { Icn } from "../ui/icn";
+import { useAuth } from "@/hooks/use-auth";
 
 interface RouteProps {
   href: string;
@@ -63,8 +64,11 @@ const featureList: FeatureProps[] = [
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const { user, loading } = useAuth();
+
   return (
-    <header className="bg-opacity-15 w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto sticky rounded-2xl flex justify-between items-center p-2 bg-card">
+    <header className="bg-opacity-15 w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto sticky rounded-2xl flex justify-between items-center px-5 md:px-0 py-2 bg-card">
       <Link href="/" className="font-bold text-lg flex items-center">
         NUBI ACADEMY
       </Link>
@@ -184,12 +188,20 @@ export const Navbar = () => {
 
       <div className="hidden lg:flex">
         <ToggleTheme />
-        <Button asChild className="mx-3">
-          <Link href="/masuk">Masuk</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/daftar">Daftar</Link>
-        </Button>
+        {user !== null ? (
+          <Button asChild className="ml-3">
+            <Link href={"/dashboard"}>Dasbor</Link>
+          </Button>
+        ) : (
+          <>
+            <Button asChild className="mx-3">
+              <Link href="/masuk">Masuk</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/daftar">Daftar</Link>
+            </Button>
+          </>
+        )}
       </div>
     </header>
   );
