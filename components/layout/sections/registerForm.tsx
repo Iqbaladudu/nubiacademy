@@ -50,8 +50,8 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
         `/masuk?from=register-success&username=${daftar.data.data.doc.username}`
       );
       return;
-    } else if (daftar?.error?.response?.status === 401) {
-      toast.warning("Gagal, periksa kembali data yang kamu masuk!", {
+    } else if (daftar?.isError) {
+      toast.warning("Gagal, periksa kembali data yang kamu!", {
         duration: 2000,
       });
       return;

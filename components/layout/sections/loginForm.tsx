@@ -60,13 +60,13 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
         router.push("/dashboard/kelas?position=kelas-saya");
       }
       return;
-    } else if (login?.error) {
+    } else if (login?.isError) {
       toast.warning("Gagal, periksa email atau kata sandi kamu", {
         duration: 2000,
       });
       return;
     }
-  }, [login.isSuccess, login?.error, router, redirectUrl]);
+  }, [login.isSuccess, login.error, router, redirectUrl, login?.isError]);
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
