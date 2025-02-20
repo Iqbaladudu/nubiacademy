@@ -27,7 +27,8 @@ import {
 } from "./pagination";
 
 export function KelasCard() {
-  const [courseData, setCourseData] = useState();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [courseData, setCourseData] = useState<any>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const page = parseInt(searchParams.get("page") || "1", 10);
