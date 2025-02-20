@@ -1,5 +1,4 @@
 import { instance } from "@/services/global";
-import { cookies } from "next/headers";
 export async function POST(request: Request) {
   const req = await request.json();
 
