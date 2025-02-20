@@ -273,7 +273,7 @@ export default function CourseDashboard() {
             ).map((arr, index) => (
               <PaginationItem
                 className={cn({
-                  "bg-gray-200 dark:bg-gray-700 pointer-events-none rounded-sm":
+                  "bg-gray-200 pointer-events-none rounded-sm dark:bg-gray-700":
                     my_classes.data.data.page === arr,
                 })}
                 key={index}
