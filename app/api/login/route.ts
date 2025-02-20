@@ -1,4 +1,5 @@
 import { instance } from "@/services/global";
+import { cookies } from "next/headers";
 export async function POST(request: Request) {
   const req = await request.json();
 
@@ -11,6 +12,7 @@ export async function POST(request: Request) {
     const { id, fullname, username, phone, email } = login.data.user;
 
     if (login.status === 200) {
+      const cks = login.headers["set-cookie"];
       return new Response(
         JSON.stringify({
           message: "Berhasil",
@@ -24,6 +26,7 @@ export async function POST(request: Request) {
         }),
         {
           status: 200,
+          headers: { "Set-Cookie": cks[0] },
         }
       );
     }

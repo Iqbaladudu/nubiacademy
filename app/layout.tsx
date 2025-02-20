@@ -19,20 +19,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
-      <Suspense>
-        <body className={cn("min-h-screen bg-background", arimo.className)}>
-          <ReactQueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-            </ThemeProvider>
-          </ReactQueryProvider>
-        </body>
-      </Suspense>
+      <body className={cn("min-h-screen bg-background", arimo.className)}>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Suspense>{children}</Suspense>
+          </ThemeProvider>
+        </ReactQueryProvider>
+      </body>
     </html>
   );
 }
