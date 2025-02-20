@@ -1,19 +1,22 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import MyCourse from "./myCourse";
+import CourseDashboard, { POSITION } from "./courseDashboard";
 
 export default function KelasPage() {
   const params = useSearchParams();
-  const position = params.get("position");
+  const position: POSITION = params.get("position") as POSITION;
 
   const components = {
-    "kelas-saya": <MyCourse />,
+    "kelas-saya": <CourseDashboard />,
+    "semua-kelas": <CourseDashboard />,
+    "kelas-selesai": <CourseDashboard />,
+    "jelajahi-kelas-baru": <CourseDashboard />,
   };
 
   return !components[position] ? (
-      <div>Tidak ditemukan</div>
+    <div>Tidak ditemukan</div>
   ) : (
-      components[position]
+    components[position]
   );
 }

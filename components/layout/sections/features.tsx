@@ -37,7 +37,7 @@ const featureList: FeaturesProps[] = [
 
 export const FeaturesSection = () => {
   return (
-    <section id="features" className="container py-24 sm:py-32">
+    <section id="features" className="container w-[75%] py-24 sm:py-32">
       <h2 className="text-lg text-primary text-center mb-2 tracking-wider">
         MULAI DARI LANGKAH KECIL
       </h2>
@@ -47,13 +47,13 @@ export const FeaturesSection = () => {
       </h2>
 
       <h3 className="md:w-1/2 mx-auto text-xl text-center text-muted-foreground mb-8">
-        <span className="text-transparent font-bold bg-gradient-to-r from-lime-700 to-primary bg-clip-text">
+        <span className="font-bold text-transparent pl-2 bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text">
           Nubi Academy
         </span>{" "}
         hadir untuk membantu kamu upgrade diri
       </h3>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-center">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-center px-0">
         {featureList.map(({ icon, title, description }) => (
           <div key={title}>
             <Card className="h-full bg-background border-0 shadow-none">

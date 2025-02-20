@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Arimo } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/layout/theme-provider";
-import ReactQueryProvider from "@/components/layout/reactQueryProvider";
-import { AuthProvider } from "@/context/authContext";
-const arimo = Arimo({ subsets: ["latin"], weight: ["500"] });
+import { ThemeProvider } from "../components/layout/providers/theme-provider";
+import ReactQueryProvider from "../components/layout/providers/reactQueryProvider";
+const arimo = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500"] });
 
 export const metadata: Metadata = {
-  title: "Shadcn - Landing template",
-  description: "Landing template from Shadcn",
+  title: "Nubi Academy | Learn Anything in AI Era",
+  description: "Nubi Academy",
 };
 
 export default function RootLayout({

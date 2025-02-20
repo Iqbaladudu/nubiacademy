@@ -17,7 +17,6 @@ type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 type Inputs = {
   fullname: string;
   username: string;
-  phone: number;
   email: string;
   password: string;
 };
@@ -29,10 +28,10 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
   const daftar = useMutation({
     mutationFn: (data: Inputs) => {
       setIsLoading(true);
+      console.log(data);
       return instance.post("/users", {
         fullname: data.fullname,
         username: data.username,
-        phone: `${data.phone}`,
         email: data.email,
         password: data.password,
       });
@@ -94,28 +93,6 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
               type="text"
               autoCapitalize="none"
               autoComplete="username"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Whatsapp
-            </Label>
-            <Input
-              id="phone"
-              {...register("phone", {
-                required: true,
-                // pattern: {
-                //   value: /^\+\d{1,3}\s?\d{1,14}(?:\s?\d{1,14})?$/,
-                //   message:
-                //     "Format nomor telepon tidak valid. Harap mulai dengan kode negara (misal: +62 untuk Indonesia)",
-                // },
-              })}
-              placeholder="Whatsapp (+62xxx)"
-              type="number"
-              autoCapitalize="none"
-              autoComplete="mobile tel"
               autoCorrect="off"
               disabled={isLoading}
             />
@@ -190,7 +167,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button variant="outline" type="button" disabled={true}>
         {isLoading && (
           <svg
             className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary"

@@ -3,11 +3,15 @@
 import {
   ChevronDown,
   ChevronRight,
+  FileText,
   LayoutGrid,
+  LetterText,
   LoaderCircle,
   LockKeyhole,
   LogOut,
   SquareCheck,
+  SquareChevronLeft,
+  SquarePlay,
   User,
 } from "lucide-react";
 
@@ -22,23 +26,33 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
 import { deleteCookie } from "cookies-next/client";
 import useCourse from "../../hooks/use-course";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Link from "next/link";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "@/db";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "../ui/button";
+import Link from "next/link";
+
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
 export interface Items {
   title: string;
@@ -81,16 +95,19 @@ export const items: Items[] = [
     icon: null,
     items: [
       { title: "Profil", url: "profil", icon: <User /> },
-      {
-        title: "Keamanan",
-        url: "keamanan",
-        icon: <LockKeyhole />,
-      },
+      // {
+      //   title: "Keamanan",
+      //   url: "keamanan",
+      //   icon: <LockKeyhole />,
+      // },
     ],
   },
 ];
 
-function SidebarNormalMenuHeader(props: { state: "expanded" | "collapsed" }) {
+function SidebarNormalMenuHeader(props: {
+  state: "expanded" | "collapsed";
+  name?: string;
+}) {
   return (
     <div className="flex items-center gap-2">
       <div
@@ -105,7 +122,7 @@ function SidebarNormalMenuHeader(props: { state: "expanded" | "collapsed" }) {
       </div>
       {props.state !== "collapsed" && (
         <div className="flex flex-col gap-0.5 leading-none">
-          <span className="font-semibold">Iqbal Adudu</span>
+          <span className="font-semibold line-clamp-1 w-44">{props.name}</span>
         </div>
       )}
     </div>
@@ -155,8 +172,9 @@ function SidebarDefaultContents({
   );
 }
 
-export function AppSidebar({ learningMode }: { learningMode: bool }) {
-  const { state } = useSidebar();
+export function AppSidebar({ learningMode }: { learningMode: boolean }) {
+  const { state, toggleSidebar } = useSidebar();
+  const [back, setBack] = useState<string>();
 
   const params = useSearchParams();
   const router = useRouter();
@@ -174,6 +192,13 @@ export function AppSidebar({ learningMode }: { learningMode: bool }) {
     enabled: Boolean(learningMode && !course && slug),
   });
 
+  const logout = useMutation({
+    mutationFn: async () => {
+      return axios.post("/api/logout");
+    },
+    onSuccess: async () => db.user.where("id").notEqual("").delete(),
+  });
+
   const data = my_class.data?.data.docs[0];
 
   useEffect(() => {
@@ -182,14 +207,48 @@ export function AppSidebar({ learningMode }: { learningMode: bool }) {
     }
   }, [data, my_class.isSuccess, setCourse]);
 
+  useEffect(() => {
+    if (logout.isSuccess) {
+      router.push("/masuk");
+    }
+  }, [logout.isSuccess, router]);
+
+  const user_data = useLiveQuery(() => db.user.toArray())!;
+
+  useEffect(() => {
+    if (pathname) {
+      const pathParts = pathname.split("/");
+      const slugIndex = pathParts.length - 2;
+      const newPath = pathParts.slice(0, slugIndex + 1).join("/");
+      setBack(newPath);
+    }
+  }, [pathname, setBack]);
+
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible={learningModeAllCondition ? "offcanvas" : "icon"}>
       <SidebarHeader className="pl-4 mt-4">
+        {learningModeAllCondition && (
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            className="w-5/12 hidden md:flex"
+            disabled={!back ? true : false}
+            onClick={() => back && router.push(back as string)}
+          >
+            <SquareChevronLeft />
+            Kembali
+          </Button>
+        )}
         <SidebarMenu>
           {learningModeAllCondition ? (
-            <p className={"prose text-xl"}>{course.name}</p>
+            <p className={"prose text-sm font-bold dark:prose-invert"}>
+              {course.name}
+            </p>
           ) : (
-            <SidebarNormalMenuHeader state={state} />
+            <SidebarNormalMenuHeader
+              name={user_data ? user_data[0].fullname : ""}
+              state={state}
+            />
           )}
         </SidebarMenu>
       </SidebarHeader>
@@ -211,22 +270,44 @@ export function AppSidebar({ learningMode }: { learningMode: bool }) {
                   </SidebarGroupLabel>
                   <CollapsibleContent className={"py-3"}>
                     <SidebarGroupContent>
-                      <SidebarMenu>
+                      <SidebarMenuSub>
                         {module?.contents?.map((content, index) => (
-                          <SidebarMenuItem key={index}>
-                            <SidebarMenuButton
+                          <SidebarMenuSubItem
+                            className="cursor-pointer"
+                            key={index}
+                          >
+                            <SidebarMenuSubButton
                               onClick={() =>
                                 router.push(`${pathname}?lesson=${content.id}`)
                               }
                               className={"h-auto"}
                               size={"sm"}
                             >
-                              <ChevronRight />
-                              <span>{content.title}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
+                              {content.contain_video ? (
+                                <SquarePlay size={14} />
+                              ) : (
+                                <LetterText size={14} />
+                              )}
+                              <span
+                                data-tooltip-id="my-tooltip"
+                                data-tooltip-content={content.title}
+                                className="p-1"
+                              >
+                                {content.title}
+                              </span>
+                            </SidebarMenuSubButton>
+                            <Tooltip
+                              id="my-tooltip"
+                              positionStrategy="fixed"
+                              style={{
+                                width: 200,
+                                fontSize: 10,
+                                textAlign: "center",
+                              }}
+                            />
+                          </SidebarMenuSubItem>
                         ))}
-                      </SidebarMenu>
+                      </SidebarMenuSub>
                     </SidebarGroupContent>
                   </CollapsibleContent>
                 </SidebarGroup>
@@ -247,8 +328,7 @@ export function AppSidebar({ learningMode }: { learningMode: bool }) {
           {!learningModeAllCondition && (
             <SidebarMenuButton
               onClick={() => {
-                deleteCookie("payload-token");
-                router.push("/masuk");
+                logout.mutate();
               }}
               className="w-auto text-destructive dark:text-destructive hover:bg-none hover:text-destructive dark:hover:bg-none dark:hover:text-destructive"
             >

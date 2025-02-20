@@ -23,6 +23,8 @@ import Link from "next/link";
 import { ToggleTheme } from "./toggle-theme";
 import { Icn } from "../ui/icn";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface RouteProps {
   href: string;
@@ -67,8 +69,15 @@ export const Navbar = () => {
 
   const { user, loading } = useAuth();
 
+  const pinnedClass = useQuery({
+    queryKey: ["pinned-class"],
+    queryFn: async () => {
+      return axios.get("/api/kelas/pinned");
+    },
+  });
+
   return (
-    <header className="bg-opacity-15 w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto sticky rounded-2xl flex justify-between items-center px-5 md:px-0 py-2 bg-card">
+    <header className="bg-opacity-15 w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto sticky rounded-2xl flex justify-between items-center px-5 md:px-0 py-2 bg-card z-50">
       <Link href="/" className="font-bold text-lg flex items-center">
         NUBI ACADEMY
       </Link>
@@ -143,19 +152,22 @@ export const Navbar = () => {
             <NavigationMenuContent>
               <div className="grid w-[600px] grid-cols-1 gap-5 p-4">
                 <ul className="flex flex-col gap-2">
-                  {featureList.map(({ title, description }) => (
-                    <li
-                      key={title}
-                      className="rounded-md p-3 text-sm hover:bg-muted cursor-pointer"
-                    >
-                      <p className="mb-1 font-semibold leading-none text-foreground">
-                        {title}
-                      </p>
-                      <p className="line-clamp-2 text-muted-foreground">
-                        {description}
-                      </p>
-                    </li>
-                  ))}
+                  {pinnedClass.isSuccess &&
+                    pinnedClass.data.data.docs.map(
+                      ({ name, short_description }) => (
+                        <li
+                          key={name}
+                          className="rounded-md p-3 text-sm hover:bg-muted cursor-pointer"
+                        >
+                          <p className="mb-1 font-semibold leading-none text-foreground">
+                            {name}
+                          </p>
+                          <p className="line-clamp-2 text-muted-foreground">
+                            {short_description}
+                          </p>
+                        </li>
+                      )
+                    )}
                   <Link href={"/kelas"}>
                     <li className="rounded-md p-3 text-sm hover:bg-muted cursor-pointer flex flex-row justify-between items-center">
                       <div className="">

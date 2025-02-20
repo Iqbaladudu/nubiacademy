@@ -12,10 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toIDRFormat } from "@/lib/utils";
-import { instance } from "@/services/global";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { getCookie } from "cookies-next/client";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -169,32 +167,36 @@ export default function Page() {
 
   return (
     <div className="max-h-screen h-screen bg-gray-100 flex justify-center items-center flex-col">
-      <Card className="w-[400px] prose prose-neutral">
+      <Card className="w-[300px] prose prose-neutral dark:bg-gray-900">
         <CardHeader>
-          <CardTitle className="prose text-3xl">Checkout</CardTitle>
-          <CardDescription className="prose">
+          <CardTitle className="text-3xl text-secondary dark:text-gray-200">
+            Checkout
+          </CardTitle>
+          <CardDescription>
             Selesaikan pembayaran untuk mengakses kursus dari Nubi Academy
           </CardDescription>
         </CardHeader>
-        <CardContent className="prose">
+        <CardContent className="dark:text-gray-200 text-secondary">
           <div>
-            <p className=" prose-sm font-semibold mt-0 mb-0">Nama kelas</p>
+            <p className="font-semibold mt-0 mb-0">Nama kelas</p>
             <p className="prose-sm mt-0 mb-0">{data?.name}</p>
           </div>
           <div>
-            <p className=" prose-sm font-semibold mt-0 mb-0">Rincian kelas</p>
-            <span className="flex justify-between mt-0 mb-0">
-              <p className="mt-0 mb-0">ID kelas</p>
-              <p className="mt-0 mb-0">{data?.id}</p>
+            <p className="font-semibold mt-0 mb-0">Rincian kelas</p>
+            <span className="flex justify-between items-baseline mt-0 mb-0">
+              <p className="mt-0 mb-0 text-sm font-medium">ID kelas</p>
+              <p className="mt-0 mb-0 text-xs text-gray-600">{data?.id}</p>
             </span>
           </div>
           <div>
-            <p className=" prose-sm font-semibold mt-0 mb-0">Kode Promo</p>
+            <p className="font-semibold mt-0 mb-0">Kode Promo</p>
             <span className="flex w-full max-w-sm items-center space-x-2">
               {check_coupon.isSuccess &&
               check_coupon.data.data.totalDocs > 0 ? (
                 <>
-                  <Badge>{check_coupon.data.data.docs[0].code}</Badge>
+                  <Badge variant={"secondary"} className="text-white">
+                    {check_coupon.data.data.docs[0].code}
+                  </Badge>
                 </>
               ) : (
                 <>
@@ -209,6 +211,8 @@ export default function Page() {
                   <Button
                     disabled={check_coupon.isLoading}
                     onClick={handleSubmit(onSubmitCoupon)}
+                    variant={"secondary"}
+                    className="text-white"
                   >
                     {check_coupon.isLoading ? <Spinner /> : "Terapkan"}
                   </Button>
@@ -250,7 +254,11 @@ export default function Page() {
             })
           }
         >
-          <Button disabled={create_order.isLoading}>
+          <Button
+            variant={"secondary"}
+            className="text-white"
+            disabled={create_order.isLoading}
+          >
             {create_order.isLoading ? <Spinner /> : "Pesan sekarang"}
           </Button>
         </CardFooter>

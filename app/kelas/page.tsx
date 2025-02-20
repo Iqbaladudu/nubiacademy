@@ -80,37 +80,7 @@ export default function Kelas() {
   return (
     <section className="flex flex-col items-center z-0">
       <Navbar />
-      <main className="grid grid-cols-12 w-full px-14">
-        <aside className="hidden col-span-2 lg:flex flex-col pr-5 gap-5 pt-20">
-          <div>
-            <p className="mb-3 font-semibold text-md">Level Pembelajaran</p>
-            {level.map(({ label, name, id }) => (
-              <div key={id} className="flex items-center mb-3 gap-2">
-                <Checkbox id={name} />
-                <Label
-                  htmlFor={name}
-                  className="text-muted-foreground font-normal"
-                >
-                  {label}
-                </Label>
-              </div>
-            ))}
-          </div>
-          <div>
-            <p className="mb-3 font-semibold text-md">Kategori</p>
-            {categories.map(({ label, name, id }) => (
-              <div key={id} className="flex items-stretch mb-3 gap-2">
-                <Checkbox id={name} name={name} />
-                <Label
-                  htmlFor={name}
-                  className=" text-muted-foreground font-normal"
-                >
-                  {label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </aside>
+      <main className="w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto">
         <KelasCard />
       </main>
     </section>

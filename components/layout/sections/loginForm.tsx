@@ -57,7 +57,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
-        router.push("/dashboard?position=kelas-saya");
+        router.push("/dashboard/kelas?position=kelas-saya");
       }
       return;
     } else if (login?.error?.response?.status === 401) {

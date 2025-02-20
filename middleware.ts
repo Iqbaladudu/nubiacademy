@@ -27,11 +27,19 @@ export default async function middleware(request: NextRequest) {
       response.cookies.set("redirectUrl", request.nextUrl.pathname);
       return response;
     }
+
+    if (request.nextUrl.pathname.endsWith(protectedRoutes[0])) {
+      return NextResponse.redirect(
+        new URL("/dashboard/kelas?position=kelas-saya", request.url)
+      );
+    }
   }
   // Check if the user is trying to access login or register pages while already logged in
   else if (redirectIfLoggedIn.includes(request.nextUrl.pathname)) {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(
+        new URL("/dashboard/kelas?position=kelas-saya", request.url)
+      );
     }
   }
 

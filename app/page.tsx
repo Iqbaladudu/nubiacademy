@@ -11,7 +11,6 @@ export default function Home() {
       <Navbar />
       <Hero />
       <CategoriesMarquee />
-      {/* <BenefitsSection /> */}
       <FeaturesSection />
       <Community />
       <Footer />

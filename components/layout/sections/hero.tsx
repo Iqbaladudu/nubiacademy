@@ -17,10 +17,10 @@ export const Hero = () => {
             </span>
             <span> The future is nearer! </span>
           </Badge>
-          <div className="max-w-screen-md mx-auto text-center text-4xl md:text-6xl font-bold">
+          <div className="max-w-screen-md mx-auto text-center text-3xl md:text-6xl font-bold">
             <h1>
               Belajar di
-              <span className="text-transparent px-2 bg-gradient-to-r from-gray-900 to-primary bg-clip-text">
+              <span className="text-transparent pl-2 bg-gradient-to-r from-[#D247BF] to-primary bg-clip-text">
                 Nubi Academy
               </span>
               Sekarang
@@ -42,12 +42,7 @@ export const Hero = () => {
               variant="outline"
               className="w-5/6 md:w-1/4 font-bold"
             >
-              <Link
-                href="https://github.com/nobruf/shadcn-landing-page.git"
-                target="_blank"
-              >
-                Tentang Kami
-              </Link>
+              <Link href="#">Tentang Kami</Link>
             </Button>
           </div>
         </div>
