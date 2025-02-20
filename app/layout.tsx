@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "../components/layout/providers/theme-provider";
 import ReactQueryProvider from "../components/layout/providers/reactQueryProvider";
+import { Suspense } from "react";
 const arimo = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["500"] });
 
 export const metadata: Metadata = {
@@ -18,18 +19,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background", arimo.className)}>
-        <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </ReactQueryProvider>
-      </body>
+      <Suspense>
+        <body className={cn("min-h-screen bg-background", arimo.className)}>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </ReactQueryProvider>
+        </body>
+      </Suspense>
     </html>
   );
 }
