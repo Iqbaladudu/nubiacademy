@@ -60,7 +60,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
         router.push("/dashboard/kelas?position=kelas-saya");
       }
       return;
-    } else if (login?.error?.response?.status === 401) {
+    } else if (login?.error) {
       toast.warning("Gagal, periksa email atau kata sandi kamu", {
         duration: 2000,
       });
