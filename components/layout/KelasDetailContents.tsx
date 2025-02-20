@@ -46,7 +46,7 @@ function ModulesCard(props: { data: any }) {
             >
               {arr.title}
             </p>
-            <CardDescription className={"h-10"}>
+            <CardDescription className={"line-clamp-5"}>
               {arr.description}
             </CardDescription>
           </CardHeader>
