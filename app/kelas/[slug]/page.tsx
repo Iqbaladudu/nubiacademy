@@ -35,7 +35,7 @@ export default async function Page({
   const slug = (await params).slug;
 
   const fetchKelas = await axios.get(
-    `${process.env.LOCAL_ENDPOINT}/kelas?where[slug][equals]=${slug}`
+    `${process.env.LOCAL_ENDPOINT}/course?where[slug][equals]=${slug}`
   );
 
   const kelasOne = await fetchKelas.data.docs[0];
