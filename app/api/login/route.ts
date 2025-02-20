@@ -11,7 +11,6 @@ export async function POST(request: Request) {
     const { id, fullname, username, phone, email } = login.data.user;
 
     if (login.status === 200) {
-      const cookie = login?.headers?.get("Set-Cookie");
       return new Response(
         JSON.stringify({
           message: "Berhasil",
@@ -25,7 +24,6 @@ export async function POST(request: Request) {
         }),
         {
           status: 200,
-          headers: { "Set-Cookie": cookie! },
         }
       );
     }
