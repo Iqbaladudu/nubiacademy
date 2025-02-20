@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import CourseDashboard, { POSITION } from "./courseDashboard";
+import { Suspense } from "react";
 
 export default function KelasPage() {
   const params = useSearchParams();
@@ -14,9 +15,13 @@ export default function KelasPage() {
     "jelajahi-kelas-baru": <CourseDashboard />,
   };
 
-  return !components[position] ? (
-    <div>Tidak ditemukan</div>
-  ) : (
-    components[position]
+  return (
+    <Suspense>
+      {!components[position] ? (
+        <div>Tidak ditemukan</div>
+      ) : (
+        components[position]
+      )}
+    </Suspense>
   );
 }

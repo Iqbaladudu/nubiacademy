@@ -6,7 +6,7 @@ import axios from "axios";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLessonPositionStore } from "@/components/layout/providers/lesson-position-provider";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import ReactPlayer from "react-player/youtube";
 
 export default function CourseDetailLesson() {
@@ -46,7 +46,7 @@ export default function CourseDetailLesson() {
   };
 
   return (
-    <>
+    <Suspense>
       <div
         onCopy={handleCopy}
         className="w-[100%] overflow-scroll rounded-none border-b border-gray-200 scrollbar-hide relative h-[90vh] md:h-[88vh] m-0"
@@ -77,6 +77,6 @@ export default function CourseDetailLesson() {
         )}
         {lesson.isError && <div>Terdapat kesalahan</div>}
       </div>
-    </>
+    </Suspense>
   );
 }

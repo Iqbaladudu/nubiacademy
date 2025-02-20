@@ -23,7 +23,7 @@ import axios from "axios";
 import { BookText } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 
 export enum POSITION {
   KELAS_SAYA = "kelas-saya",
@@ -122,179 +122,186 @@ export default function CourseDashboard() {
   });
 
   return (
-    <div className="min-h-full h-full">
-      <div className="grid grid-cols-1 justify-self-center lg:grid-cols-2 xl:grid-cols-none xl:flex xl:justify-start xl:justify-self-start xl:flex-wrap gap-3">
-        <div className="col-span-1 lg:col-span-2 xl:w-full mt-20 md:mt-0">
-          <div>{HEADER[position]}</div>
-        </div>
-        {my_classes.isLoading && (
-          <>
-            <Skeleton className="w-[300px] h-[350px]" />
-            <Skeleton className="w-[300px] h-[350px]" />
-            <Skeleton className="w-[300px] h-[350px]" />
-            <Skeleton className="w-[300px] h-[350px]" />
-            <Skeleton className="w-[300px] h-[350px]" />
-            <Skeleton className="w-[300px] h-[350px]" />
-          </>
-        )}
-        {my_classes.isSuccess && my_classes.data.data.docs.length > 0 ? (
-          my_classes.data.data.docs.map((arr, key) => (
-            <Card className="w-[300px]" key={key}>
-              <CardHeader>
-                <div>
-                  <Badge
-                    className={`text-white bg-dark-blue hover:bg-dark-blue ${!arr.category_name && "hidden"}`}
-                  >
-                    {arr.category_name}
-                  </Badge>
-                  <Badge
-                    variant={"outline"}
-                    className={`text-dark-blue border-dark-blue ml-2  ${!arr.level && "hidden"}`}
-                  >
-                    {arr.level}
-                  </Badge>
-                </div>
-                <CardTitle className=" line-clamp-4 h-24 prose dark:text-white">
-                  {arr?.name}
-                </CardTitle>
-                {position === POSITION.JELAJAHI_KELAS_BARU && (
-                  <div className="prose dark:text-white flex text-xl items-center gap-1">
-                    <BookText
-                      className="text-secondary dark:text-white"
-                      height={14}
-                      width={14}
-                    />
-                    <p className="p-0 m-0 text-sm text-secondary dark:text-gray-200">
-                      {arr.modules.length} modul
-                    </p>
-                  </div>
-                )}
-                <CardDescription className="h-[7.5rem] line-clamp-6">
-                  {arr.short_description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="prose dark:text-white flex text-xl items-center gap-1">
-                  {position === POSITION.JELAJAHI_KELAS_BARU ? (
-                    <p className="p-0 m-0 text-secondary text-sm font-semibold dark:text-gray-200">
-                      {arr.price > 0 ? (
-                        toIDRFormat(arr.price)
-                      ) : (
-                        <Badge
-                          variant={"outline"}
-                          className="text-secondary border-secondary dark:text-gray-200 dark:border-200"
-                        >
-                          Gratis
-                        </Badge>
-                      )}
-                    </p>
-                  ) : (
-                    <>
-                      <BookText height={24} width={24} />
-                      <p className="p-0 m-0">{arr.modules.length} modul</p>
-                    </>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter
-                className={cn("flex justify-start", {
-                  "justify-between": position === POSITION.JELAJAHI_KELAS_BARU,
-                })}
-              >
-                <Button
-                  asChild
-                  size={"sm"}
-                  className={`text-white ${position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false ? "w-28" : "w-auto"} bg-dark-blue hover:bg-dark-blue`}
-                >
-                  {position === POSITION.JELAJAHI_KELAS_BARU &&
-                  arr.mine === false ? (
-                    <Link href={`/kelas/${arr.slug}/checkout`}>
-                      Beli sekarang
-                    </Link>
-                  ) : (
-                    <Link href={`${pathname + "/" + arr.slug}`}>
-                      Akses sekarang
-                    </Link>
-                  )}
-                </Button>
-                {position === POSITION.JELAJAHI_KELAS_BARU &&
-                  arr.mine === false && (
-                    <Button
-                      asChild
-                      size={"sm"}
-                      variant={"outline"}
-                      className="w-28 text-dark-blue border-dark-blue font-normal"
+    <Suspense>
+      <div className="min-h-full h-full">
+        <div className="grid grid-cols-1 justify-self-center lg:grid-cols-2 xl:grid-cols-none xl:flex xl:justify-start xl:justify-self-start xl:flex-wrap gap-3">
+          <div className="col-span-1 lg:col-span-2 xl:w-full mt-20 md:mt-0">
+            <div>{HEADER[position]}</div>
+          </div>
+          {my_classes.isLoading && (
+            <>
+              <Skeleton className="w-[300px] h-[350px]" />
+              <Skeleton className="w-[300px] h-[350px]" />
+              <Skeleton className="w-[300px] h-[350px]" />
+              <Skeleton className="w-[300px] h-[350px]" />
+              <Skeleton className="w-[300px] h-[350px]" />
+              <Skeleton className="w-[300px] h-[350px]" />
+            </>
+          )}
+          {my_classes.isSuccess && my_classes.data.data.docs.length > 0 ? (
+            my_classes.data.data.docs.map((arr, key) => (
+              <Card className="w-[300px]" key={key}>
+                <CardHeader>
+                  <div>
+                    <Badge
+                      className={`text-white bg-dark-blue hover:bg-dark-blue ${!arr.category_name && "hidden"}`}
                     >
-                      <Link href={`${pathname + "/" + arr.slug}`}>Detail</Link>
-                    </Button>
+                      {arr.category_name}
+                    </Badge>
+                    <Badge
+                      variant={"outline"}
+                      className={`text-dark-blue border-dark-blue ml-2  ${!arr.level && "hidden"}`}
+                    >
+                      {arr.level}
+                    </Badge>
+                  </div>
+                  <CardTitle className=" line-clamp-4 h-24 prose dark:text-white">
+                    {arr?.name}
+                  </CardTitle>
+                  {position === POSITION.JELAJAHI_KELAS_BARU && (
+                    <div className="prose dark:text-white flex text-xl items-center gap-1">
+                      <BookText
+                        className="text-secondary dark:text-white"
+                        height={14}
+                        width={14}
+                      />
+                      <p className="p-0 m-0 text-sm text-secondary dark:text-gray-200">
+                        {arr.modules.length} modul
+                      </p>
+                    </div>
                   )}
-              </CardFooter>
-            </Card>
-          ))
-        ) : (
-          <>
-            {my_classes.isSuccess && (
-              <div className="prose dark:prose-invert">
-                Ops, kamu sekarang tidak mengikuti kelas apapun. Silahkan
-                periksa{" "}
-                <Link
-                  href={"/dashboard/kelas?position=semua-kelas&page=1"}
-                  className="font-bold underline"
+                  <CardDescription className="h-[7.5rem] line-clamp-6">
+                    {arr.short_description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose dark:text-white flex text-xl items-center gap-1">
+                    {position === POSITION.JELAJAHI_KELAS_BARU ? (
+                      <p className="p-0 m-0 text-secondary text-sm font-semibold dark:text-gray-200">
+                        {arr.price > 0 ? (
+                          toIDRFormat(arr.price)
+                        ) : (
+                          <Badge
+                            variant={"outline"}
+                            className="text-secondary border-secondary dark:text-gray-200 dark:border-200"
+                          >
+                            Gratis
+                          </Badge>
+                        )}
+                      </p>
+                    ) : (
+                      <>
+                        <BookText height={24} width={24} />
+                        <p className="p-0 m-0">{arr.modules.length} modul</p>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+                <CardFooter
+                  className={cn("flex justify-start", {
+                    "justify-between":
+                      position === POSITION.JELAJAHI_KELAS_BARU,
+                  })}
                 >
-                  semua kelas
-                </Link>{" "}
-                atau{" "}
-                <Link
-                  href={"/dashboard/kelas?position=jelajahi-kelas-baru&page=1"}
-                  className="font-bold underline"
+                  <Button
+                    asChild
+                    size={"sm"}
+                    className={`text-white ${position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false ? "w-28" : "w-auto"} bg-dark-blue hover:bg-dark-blue`}
+                  >
+                    {position === POSITION.JELAJAHI_KELAS_BARU &&
+                    arr.mine === false ? (
+                      <Link href={`/kelas/${arr.slug}/checkout`}>
+                        Beli sekarang
+                      </Link>
+                    ) : (
+                      <Link href={`${pathname + "/" + arr.slug}`}>
+                        Akses sekarang
+                      </Link>
+                    )}
+                  </Button>
+                  {position === POSITION.JELAJAHI_KELAS_BARU &&
+                    arr.mine === false && (
+                      <Button
+                        asChild
+                        size={"sm"}
+                        variant={"outline"}
+                        className="w-28 text-dark-blue border-dark-blue font-normal"
+                      >
+                        <Link href={`${pathname + "/" + arr.slug}`}>
+                          Detail
+                        </Link>
+                      </Button>
+                    )}
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            <>
+              {my_classes.isSuccess && (
+                <div className="prose dark:prose-invert">
+                  Ops, kamu sekarang tidak mengikuti kelas apapun. Silahkan
+                  periksa{" "}
+                  <Link
+                    href={"/dashboard/kelas?position=semua-kelas&page=1"}
+                    className="font-bold underline"
+                  >
+                    semua kelas
+                  </Link>{" "}
+                  atau{" "}
+                  <Link
+                    href={
+                      "/dashboard/kelas?position=jelajahi-kelas-baru&page=1"
+                    }
+                    className="font-bold underline"
+                  >
+                    jelajahi kelas baru
+                  </Link>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {my_classes.isSuccess && my_classes.data.data.totalPages > 1 && (
+          <Pagination className="mt-5">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  className={cn({
+                    "pointer-events-none opacity-50":
+                      my_classes.data.data.hasNextPage,
+                  })}
+                  href={changePosition(my_classes.data.data.prevPage)}
+                />
+              </PaginationItem>
+              {Array.from(
+                { length: my_classes.data.data.totalPages },
+                (_, i) => i + 1
+              ).map((arr, index) => (
+                <PaginationItem
+                  className={cn({
+                    "bg-gray-200 pointer-events-none rounded-sm dark:bg-gray-700":
+                      my_classes.data.data.page === arr,
+                  })}
+                  key={index}
                 >
-                  jelajahi kelas baru
-                </Link>
-              </div>
-            )}
-          </>
+                  <PaginationLink href={changePosition(arr)}>
+                    {arr}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  className={cn({
+                    "pointer-events-none opacity-50":
+                      my_classes.data.data.hasPrevPage,
+                  })}
+                  href={changePosition(my_classes.data.data.nextPage)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </div>
-      {my_classes.isSuccess && my_classes.data.data.totalPages > 1 && (
-        <Pagination className="mt-5">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                className={cn({
-                  "pointer-events-none opacity-50":
-                    my_classes.data.data.hasNextPage,
-                })}
-                href={changePosition(my_classes.data.data.prevPage)}
-              />
-            </PaginationItem>
-            {Array.from(
-              { length: my_classes.data.data.totalPages },
-              (_, i) => i + 1
-            ).map((arr, index) => (
-              <PaginationItem
-                className={cn({
-                  "bg-gray-200 pointer-events-none rounded-sm dark:bg-gray-700":
-                    my_classes.data.data.page === arr,
-                })}
-                key={index}
-              >
-                <PaginationLink href={changePosition(arr)}>
-                  {arr}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                className={cn({
-                  "pointer-events-none opacity-50":
-                    my_classes.data.data.hasPrevPage,
-                })}
-                href={changePosition(my_classes.data.data.nextPage)}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
-    </div>
+    </Suspense>
   );
 }

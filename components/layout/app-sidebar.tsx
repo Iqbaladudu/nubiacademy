@@ -30,7 +30,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
@@ -220,123 +220,127 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
   }, [pathname, setBack]);
 
   return (
-    <Sidebar collapsible={learningModeAllCondition ? "offcanvas" : "icon"}>
-      <SidebarHeader className="pl-4 mt-4">
-        {learningModeAllCondition && (
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            className="w-5/12 hidden md:flex"
-            disabled={!back ? true : false}
-            onClick={() => back && router.push(back as string)}
-          >
-            <SquareChevronLeft />
-            Kembali
-          </Button>
-        )}
-        <SidebarMenu>
+    <Suspense>
+      <Sidebar collapsible={learningModeAllCondition ? "offcanvas" : "icon"}>
+        <SidebarHeader className="pl-4 mt-4">
+          {learningModeAllCondition && (
+            <Button
+              variant={"outline"}
+              size={"sm"}
+              className="w-5/12 hidden md:flex"
+              disabled={!back ? true : false}
+              onClick={() => back && router.push(back as string)}
+            >
+              <SquareChevronLeft />
+              Kembali
+            </Button>
+          )}
+          <SidebarMenu>
+            {learningModeAllCondition ? (
+              <p className={"prose text-sm font-bold dark:prose-invert"}>
+                {course.name}
+              </p>
+            ) : (
+              <SidebarNormalMenuHeader
+                name={user_data ? user_data[0].fullname : ""}
+                state={state}
+              />
+            )}
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent className={"scrollbar-hide"}>
           {learningModeAllCondition ? (
-            <p className={"prose text-sm font-bold dark:prose-invert"}>
-              {course.name}
-            </p>
+            <>
+              {course?.modules?.map((module, index) => (
+                <Collapsible
+                  key={index}
+                  defaultOpen={false}
+                  className="group/collapsible"
+                >
+                  <SidebarGroup>
+                    <SidebarGroupLabel asChild>
+                      <CollapsibleTrigger className={"h-auto"}>
+                        <p className={"text-left"}>{module.title}</p>
+                        <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                      </CollapsibleTrigger>
+                    </SidebarGroupLabel>
+                    <CollapsibleContent className={"py-3"}>
+                      <SidebarGroupContent>
+                        <SidebarMenuSub>
+                          {module?.contents?.map((content, index) => (
+                            <SidebarMenuSubItem
+                              className="cursor-pointer"
+                              key={index}
+                            >
+                              <SidebarMenuSubButton
+                                onClick={() =>
+                                  router.push(
+                                    `${pathname}?lesson=${content.id}`
+                                  )
+                                }
+                                className={"h-auto"}
+                                size={"sm"}
+                              >
+                                {content.contain_video ? (
+                                  <SquarePlay size={14} />
+                                ) : (
+                                  <LetterText size={14} />
+                                )}
+                                <span
+                                  data-tooltip-id="my-tooltip"
+                                  data-tooltip-content={content.title}
+                                  className="p-1"
+                                >
+                                  {content.title}
+                                </span>
+                              </SidebarMenuSubButton>
+                              <Tooltip
+                                id="my-tooltip"
+                                positionStrategy="fixed"
+                                style={{
+                                  width: 200,
+                                  fontSize: 10,
+                                  textAlign: "center",
+                                }}
+                              />
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </SidebarGroupContent>
+                    </CollapsibleContent>
+                  </SidebarGroup>
+                </Collapsible>
+              ))}
+            </>
           ) : (
-            <SidebarNormalMenuHeader
-              name={user_data ? user_data[0].fullname : ""}
-              state={state}
+            <SidebarDefaultContents
+              router={router}
+              items={items}
+              position={position as string}
             />
           )}
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent className={"scrollbar-hide"}>
-        {learningModeAllCondition ? (
-          <>
-            {course?.modules?.map((module, index) => (
-              <Collapsible
-                key={index}
-                defaultOpen={false}
-                className="group/collapsible"
+        </SidebarContent>
+
+        <SidebarFooter>
+          <div className="flex justify-between items-center flex-wrap-reverse">
+            {!learningModeAllCondition && (
+              <SidebarMenuButton
+                onClick={() => {
+                  logout.mutate();
+                }}
+                className="w-auto text-destructive dark:text-destructive hover:bg-none hover:text-destructive dark:hover:bg-none dark:hover:text-destructive"
               >
-                <SidebarGroup>
-                  <SidebarGroupLabel asChild>
-                    <CollapsibleTrigger className={"h-auto"}>
-                      <p className={"text-left"}>{module.title}</p>
-                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                    </CollapsibleTrigger>
-                  </SidebarGroupLabel>
-                  <CollapsibleContent className={"py-3"}>
-                    <SidebarGroupContent>
-                      <SidebarMenuSub>
-                        {module?.contents?.map((content, index) => (
-                          <SidebarMenuSubItem
-                            className="cursor-pointer"
-                            key={index}
-                          >
-                            <SidebarMenuSubButton
-                              onClick={() =>
-                                router.push(`${pathname}?lesson=${content.id}`)
-                              }
-                              className={"h-auto"}
-                              size={"sm"}
-                            >
-                              {content.contain_video ? (
-                                <SquarePlay size={14} />
-                              ) : (
-                                <LetterText size={14} />
-                              )}
-                              <span
-                                data-tooltip-id="my-tooltip"
-                                data-tooltip-content={content.title}
-                                className="p-1"
-                              >
-                                {content.title}
-                              </span>
-                            </SidebarMenuSubButton>
-                            <Tooltip
-                              id="my-tooltip"
-                              positionStrategy="fixed"
-                              style={{
-                                width: 200,
-                                fontSize: 10,
-                                textAlign: "center",
-                              }}
-                            />
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </SidebarGroupContent>
-                  </CollapsibleContent>
-                </SidebarGroup>
-              </Collapsible>
-            ))}
-          </>
-        ) : (
-          <SidebarDefaultContents
-            router={router}
-            items={items}
-            position={position as string}
-          />
-        )}
-      </SidebarContent>
+                <LogOut />
+                <span>Keluar</span>
+              </SidebarMenuButton>
+            )}
 
-      <SidebarFooter>
-        <div className="flex justify-between items-center flex-wrap-reverse">
-          {!learningModeAllCondition && (
-            <SidebarMenuButton
-              onClick={() => {
-                logout.mutate();
-              }}
-              className="w-auto text-destructive dark:text-destructive hover:bg-none hover:text-destructive dark:hover:bg-none dark:hover:text-destructive"
-            >
-              <LogOut />
-              <span>Keluar</span>
-            </SidebarMenuButton>
-          )}
-
-          <div className="size-8 flex justify-center items-center">
-            <ToggleTheme />
+            <div className="size-8 flex justify-center items-center">
+              <ToggleTheme />
+            </div>
           </div>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
+        </SidebarFooter>
+      </Sidebar>
+    </Suspense>
   );
 }

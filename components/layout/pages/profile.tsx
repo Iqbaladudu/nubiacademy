@@ -69,67 +69,69 @@ export default function Profile() {
   });
 
   return (
-    <div className="flex justify-center items-start lg:items-center h-full">
-      <Card className="border-0 md:border">
-        <CardHeader>
-          <CardTitle className="">Profil saya</CardTitle>
-          <CardDescription>
-            Pastikan kamu mengisi data dengan benar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="grid w-full items-center gap-4">
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Nama"}
-                value={user?.data.fullname}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Username"}
-                value={user?.data.username}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Email"}
-                value={user?.data.email}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Whatsapp"}
-                value={user?.data.phone}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Provinsi"}
-                value={user?.data.province}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Kota"}
-                value={user?.data.regency}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Status langganan"}
-                value={user?.data.subscription_status}
-              />
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          {profile_success && (
-            <EditProfileDialog user={user?.data} refetch={refetch} />
-          )}
-          {profile_loading && (
-            <div>
-              <Skeleton className="w-28 h-10" />
-            </div>
-          )}
-        </CardFooter>
-      </Card>
-    </div>
+    <React.Suspense>
+      <div className="flex justify-center items-start lg:items-center h-full">
+        <Card className="border-0 md:border">
+          <CardHeader>
+            <CardTitle className="">Profil saya</CardTitle>
+            <CardDescription>
+              Pastikan kamu mengisi data dengan benar
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form>
+              <div className="grid w-full items-center gap-4">
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Nama"}
+                  value={user?.data.fullname}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Username"}
+                  value={user?.data.username}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Email"}
+                  value={user?.data.email}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Whatsapp"}
+                  value={user?.data.phone}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Provinsi"}
+                  value={user?.data.province}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Kota"}
+                  value={user?.data.regency}
+                />
+                <ProfileItem
+                  isLoading={profile_loading}
+                  label={"Status langganan"}
+                  value={user?.data.subscription_status}
+                />
+              </div>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-end">
+            {profile_success && (
+              <EditProfileDialog user={user?.data} refetch={refetch} />
+            )}
+            {profile_loading && (
+              <div>
+                <Skeleton className="w-28 h-10" />
+              </div>
+            )}
+          </CardFooter>
+        </Card>
+      </div>
+    </React.Suspense>
   );
 
   function ProfileItem({
