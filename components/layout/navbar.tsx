@@ -1,6 +1,7 @@
 "use client";
-import { ChevronsDown, Github, Menu } from "lucide-react";
-import React, { useEffect } from "react";
+
+import { Menu } from "lucide-react";
+import React from "react";
 import {
   Sheet,
   SheetContent,
@@ -31,11 +32,6 @@ interface RouteProps {
   label: string;
 }
 
-interface FeatureProps {
-  title: string;
-  description: string;
-}
-
 const routeList: RouteProps[] = [
   {
     href: "#",
@@ -51,23 +47,10 @@ const routeList: RouteProps[] = [
   },
 ];
 
-const featureList: FeatureProps[] = [
-  {
-    title: "Belajar Prompt Engineering",
-    description:
-      "Menjadi prompter chatbot handal, maksimalkan potensi kamu dengan ChatGPT dan sejenisnya.",
-  },
-  {
-    title: "Belajar Canva untuk Pemula",
-    description:
-      "Menjadi desainer sat set dengan menguasai Canva, dijamin pekerjaanmu akan wuss.",
-  },
-];
-
 export const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   const pinnedClass = useQuery({
     queryKey: ["pinned-class"],

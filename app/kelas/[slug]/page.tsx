@@ -1,10 +1,8 @@
 import { Navbar } from "@/components/layout/navbar";
-import { instance, local } from "@/services/global";
 import Image from "next/image";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import { Footer } from "@/components/layout/sections/footer";
 import { Badge } from "@/components/ui/badge";
-import { formatToK } from "@/util/numberToKFormatter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {

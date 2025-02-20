@@ -37,7 +37,7 @@ export const LessonPositionProvider: React.FC<
 };
 
 export const useLessonPositionStore = <T,>(
-  selector: (store: KelasPositionStore) => T
+  selector: (store: KelasPositionStore) => T,
 ): T => {
   const lessonPositionStoreContext = useContext(LessonPositionContext);
 

@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
   ChevronDown,
   ChevronRight,
-  FileText,
   LayoutGrid,
   LetterText,
   LoaderCircle,
-  LockKeyhole,
   LogOut,
   SquareCheck,
   SquareChevronLeft,
@@ -35,7 +34,6 @@ import { ReactElement, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { ToggleTheme } from "./toggle-theme";
-import { deleteCookie } from "cookies-next/client";
 import useCourse from "../../hooks/use-course";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -47,10 +45,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "../ui/button";
-import Link from "next/link";
-
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 
@@ -173,7 +168,7 @@ function SidebarDefaultContents({
 }
 
 export function AppSidebar({ learningMode }: { learningMode: boolean }) {
-  const { state, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const [back, setBack] = useState<string>();
 
   const params = useSearchParams();

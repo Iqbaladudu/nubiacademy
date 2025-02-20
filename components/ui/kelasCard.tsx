@@ -8,11 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "./card";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { instance } from "@/services/global";
 import { useCallback, useEffect, useState } from "react";
-import { db } from "@/db";
 import axios from "axios";
 import { cn, toIDRFormat } from "@/lib/utils";
 import { Badge } from "./badge";
@@ -27,53 +25,6 @@ import {
   PaginationLink,
   PaginationNext,
 } from "./pagination";
-
-const BaseSkillLevelIcon = ({
-  width = 20,
-  height = 20,
-  color = "hsl(161 99.1% 43.3%)",
-  level = "beginner",
-  ...props
-}) => {
-  const paths = {
-    beginner: [
-      "M30,30H22V4h8Zm-6-2h4V6H24Z",
-      "M20,30H12V12h8Zm-6-2h4V14H14Z",
-      "M10,30H2V18h8Z",
-    ],
-    intermediate: [
-      "M30,30H22V4h8Zm-6-2h4V6H24Z",
-      "M20,30H12V12h8Z",
-      "M10,30H2V18h8Z",
-    ],
-    advanced: ["M30,30H22V4h8Z", "M20,30H12V12h8Z", "M10,30H2V18h8Z"],
-  };
-
-  return (
-    <svg
-      fill={color}
-      viewBox="0 0 32 32"
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      {...props}
-    >
-      <g>
-        {paths[level].map((path, index) => (
-          <path key={index} d={path} />
-        ))}
-        <rect
-          id="_Transparent_Rectangle_"
-          x="0"
-          y="0"
-          width="32"
-          height="32"
-          fill="none"
-        />
-      </g>
-    </svg>
-  );
-};
 
 export function KelasCard() {
   const [courseData, setCourseData] = useState();

@@ -66,7 +66,7 @@ export const initKelasPosition = (): KelasPositionState => {
 };
 
 export const createKelasPositionStore = (
-  initState: KelasPositionState = defaultInitState
+  initState: KelasPositionState = defaultInitState,
 ) => {
   return createStore<KelasPositionStore>()((set) => ({
     ...initState,

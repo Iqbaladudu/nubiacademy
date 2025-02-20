@@ -16,10 +16,10 @@ export default async function middleware(request: NextRequest) {
   // Check if the user is accessing a protected route
   if (
     protectedRoutes.some((route) =>
-      request.nextUrl.pathname.startsWith(route)
+      request.nextUrl.pathname.startsWith(route),
     ) ||
     protectedRoutesFromEnd.some((route) =>
-      request.nextUrl.pathname.endsWith(route)
+      request.nextUrl.pathname.endsWith(route),
     )
   ) {
     if (!isLoggedIn) {
@@ -30,7 +30,7 @@ export default async function middleware(request: NextRequest) {
 
     if (request.nextUrl.pathname.endsWith(protectedRoutes[0])) {
       return NextResponse.redirect(
-        new URL("/dashboard/kelas?position=kelas-saya", request.url)
+        new URL("/dashboard/kelas?position=kelas-saya", request.url),
       );
     }
   }
@@ -38,7 +38,7 @@ export default async function middleware(request: NextRequest) {
   else if (redirectIfLoggedIn.includes(request.nextUrl.pathname)) {
     if (isLoggedIn) {
       return NextResponse.redirect(
-        new URL("/dashboard/kelas?position=kelas-saya", request.url)
+        new URL("/dashboard/kelas?position=kelas-saya", request.url),
       );
     }
   }

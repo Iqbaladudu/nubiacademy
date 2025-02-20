@@ -17,14 +17,14 @@ export async function GET(request: NextRequest) {
       { ...kelas.data },
       {
         status: 200,
-      }
+      },
     );
   } catch (error) {
     return NextResponse.json(
       { error },
       {
         status: 401,
-      }
+      },
     );
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -238,7 +239,7 @@ export default function Page() {
               <p className="mt-0 mb-0">Total</p>
               <p className="mt-0 mb-0">
                 {discount
-                  ? toIDRFormat(data?.price - discount)
+                  ? toIDRFormat((data?.price as number) - discount)
                   : toIDRFormat(data?.price)}
               </p>
             </span>

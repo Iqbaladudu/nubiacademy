@@ -10,14 +10,14 @@ export async function GET() {
         {
           ...check_cookie_and_validate,
         },
-        { status: 200 }
+        { status: 200 },
       );
     case "ERROR":
       return NextResponse.json(
         {
           ...check_cookie_and_validate,
         },
-        { status: 401 }
+        { status: 401 },
       );
     default:
       break;

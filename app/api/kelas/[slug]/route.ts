@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   const slug = (await params).slug;
   const cookie = (await cookies()).get("payload-token");
@@ -21,14 +21,14 @@ export async function GET(
         {
           ...kelas.data,
         },
-        { status: 200 }
+        { status: 200 },
       );
     } else {
       return NextResponse.json(
         {
           message: "Kelas tidak ditemukan",
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
   } catch (error) {
@@ -37,7 +37,7 @@ export async function GET(
         message: "Terjadi kesalahan",
         error,
       },
-      { status: 401 }
+      { status: 401 },
     );
   }
 }

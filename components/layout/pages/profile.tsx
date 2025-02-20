@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm, UseFormReturn } from "react-hook-form";
@@ -35,12 +35,19 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
 enum AKUN_SAYA_POSITION {
   PROFIL = "profil",
   KEAMANAN = "keamanan",
+}
+
+enum TYPE_FORM {
+  FULLNAME = "fullname",
+  USERNAME = "username",
+  PHONE = "phone",
+  PROVINCE = "province",
+  REGENCY = "regency",
 }
 
 export default function Profile() {
@@ -158,6 +165,7 @@ export default function Profile() {
     );
   }
 }
+// fullname" | "username" | "phone" | "province" | "regency"
 
 const phoneNumberPattern = /^\+?[1-9]\d{1,14}$/;
 
@@ -173,7 +181,6 @@ const editProfileFormSchema = z.object({
 
 function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
   const [open, setOpen] = React.useState(false);
-  const { toast } = useToast();
   const update = useMutation({
     mutationFn: async ({
       data,
@@ -205,7 +212,7 @@ function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
       setOpen(false);
       refetch();
     }
-  }, [update.isSuccess]);
+  }, [refetch, update.isSuccess]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -228,22 +235,30 @@ function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
               className="flex flex-col gap-2 w-full"
             >
               <ProfileItemFormEdit
-                name="fullname"
+                name={TYPE_FORM.FULLNAME}
                 label="Nama lengkap"
                 form={form}
               />
               <ProfileItemFormEdit
-                name="username"
+                name={TYPE_FORM.USERNAME}
                 label="Username"
                 form={form}
               />
-              <ProfileItemFormEdit name="phone" label="Whatsapp" form={form} />
               <ProfileItemFormEdit
-                name="province"
+                name={TYPE_FORM.PHONE}
+                label="Whatsapp"
+                form={form}
+              />
+              <ProfileItemFormEdit
+                name={TYPE_FORM.PROVINCE}
                 label="Provinsi"
                 form={form}
               />
-              <ProfileItemFormEdit name="regency" label="Kota" form={form} />
+              <ProfileItemFormEdit
+                name={TYPE_FORM.REGENCY}
+                label="Kota"
+                form={form}
+              />
               <Button
                 disabled={update.isLoading}
                 type="submit"
@@ -287,7 +302,7 @@ function ProfileItemFormEdit({
   label,
 }: {
   form: UseFormReturn<z.infer<typeof editProfileFormSchema>, any, undefined>;
-  name: string;
+  name: TYPE_FORM;
   label: string;
 }) {
   return (

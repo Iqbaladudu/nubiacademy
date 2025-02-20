@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         {
           status: 200,
           headers: { "Set-Cookie": cookie },
-        }
+        },
       );
     }
   } catch (error) {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       }),
       {
         status: 401,
-      }
+      },
     );
   }
 }

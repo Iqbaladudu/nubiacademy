@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { instance, local } from "@/services/global";
+import { local } from "@/services/global";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";

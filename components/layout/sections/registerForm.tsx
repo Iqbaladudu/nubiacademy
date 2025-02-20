@@ -39,11 +39,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
     onSettled: () => setIsLoading(false),
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => daftar.mutate(data);
 
@@ -60,7 +56,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
       });
       return;
     }
-  }, [daftar]);
+  }, [daftar, router]);
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>

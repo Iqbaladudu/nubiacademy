@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ code: string }> }
+  { params }: { params: Promise<{ code: string }> },
 ) {
   const code = (await params).code;
   const cok = (await cookies()).get("payload-token");
@@ -30,7 +30,7 @@ export async function GET(
         {
           ...check_cookie_and_validate,
         },
-        { status: 401 }
+        { status: 401 },
       );
     default:
       break;

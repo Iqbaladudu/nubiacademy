@@ -20,7 +20,7 @@ export async function PATCH(request: Request) {
             headers: {
               Authorization: `JWT ${cookie?.value}`,
             },
-          }
+          },
         );
 
         return NextResponse.json(
@@ -29,7 +29,7 @@ export async function PATCH(request: Request) {
           },
           {
             status: 200,
-          }
+          },
         );
       } catch (error) {
         return NextResponse.json(
@@ -39,7 +39,7 @@ export async function PATCH(request: Request) {
           },
           {
             status: 401,
-          }
+          },
         );
       }
     case "ERROR":
@@ -47,7 +47,7 @@ export async function PATCH(request: Request) {
         {
           ...check_cookie_and_validate,
         },
-        { status: 401 }
+        { status: 401 },
       );
   }
 }
@@ -69,20 +69,20 @@ export async function GET() {
             {
               ...me.data.user,
             },
-            { status: 200 }
+            { status: 200 },
           );
         } else {
           return NextResponse.json(
             {
               message: "Terdapat kesalahan",
             },
-            { status: me.status }
+            { status: me.status },
           );
         }
       } catch {
         return NextResponse.json(
           { message: "Terdapat kesalahan" },
-          { status: 401 }
+          { status: 401 },
         );
       }
     case "ERROR":
@@ -90,7 +90,7 @@ export async function GET() {
         {
           ...check_cookie_and_validate,
         },
-        { status: 401 }
+        { status: 401 },
       );
   }
 }

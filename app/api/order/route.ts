@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       course_item,
       order_number,
       coupon_code,
-    })
+    }),
   );
 
   const check_cookie_and_validate = await checkCookieAndValidate();
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         {
           ...check_cookie_and_validate,
         },
-        { status: 401 }
+        { status: 401 },
       );
     default:
       break;

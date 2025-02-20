@@ -1,12 +1,12 @@
-import {CourseContext} from "../context/courseContext";
-import {useContext} from "react";
+import { CourseContext } from "../context/courseContext";
+import { useContext } from "react";
 
 export default function useCourse() {
-    const context = useContext(CourseContext);
+  const context = useContext(CourseContext);
 
-    if (!context) {
-        throw new Error("Terjadi kesalaham")
-    }
-    
-    return context
+  if (!context) {
+    throw new Error("Terjadi kesalaham");
+  }
+
+  return context;
 }

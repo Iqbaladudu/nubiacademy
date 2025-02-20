@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  AppSidebar,
-  items,
-  Items,
-  items as menuItem,
-} from "@/components/layout/app-sidebar";
+import { AppSidebar, items } from "@/components/layout/app-sidebar";
 import {
   SidebarProvider as Provider,
   SidebarInset,
@@ -23,7 +18,7 @@ import isValidMongoId from "../../../util/isValidMongoId";
 import useCourse from "../../../hooks/use-course";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "../../ui/button";
 import {
   SheetTrigger,
