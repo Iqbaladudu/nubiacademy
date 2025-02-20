@@ -19,7 +19,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const course = await axios
-    .get(`${process.env.LOCAL_ENDPOINT}/kelas`)
+    .get(`${process.env.LOCAL_ENDPOINT}/course`)
     .then((res) => res.data.docs);
 
   return course.map((course) => ({
@@ -35,7 +35,7 @@ export default async function Page({
   const slug = (await params).slug;
 
   const fetchKelas = await axios.get(
-    `${process.env.LOCAL_ENDPOINT}/kelas/${slug}`
+    `${process.env.LOCAL_ENDPOINT}/kelas?where[slug][equals]=${slug}`
   );
 
   const kelasOne = await fetchKelas.data.docs[0];
@@ -50,7 +50,7 @@ export default async function Page({
             <Image
               height={kelasOne.thumbnail.height}
               width={kelasOne.thumbnail.width}
-              src={`http://localhost:3001${kelasOne.thumbnail.url}`}
+              src={`${process.env.MAIN}/${kelasOne.thumbnail.url}`}
               alt={kelasOne.name}
               className="w-[250px] h-[250px] object-cover mx-auto md:mx-0"
             />
