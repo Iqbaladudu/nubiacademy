@@ -82,7 +82,7 @@ export default function SidebarProvider({
     <Provider>
       <AppSidebar learningMode={learningMode as boolean} />
       <SidebarInset>
-        {match && (
+        {!match && (
           <header className="w-full bg-white dark:bg-background z-50 mx-auto shadow flex justify-between items-center px-5 py-5 md:hidden">
             <Link
               href="/"
