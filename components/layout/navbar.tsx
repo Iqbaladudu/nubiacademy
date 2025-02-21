@@ -98,7 +98,7 @@ export const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     asChild
                     variant="ghost"
-                    className="justify-start text-base text-white"
+                    className="justify-start text-base"
                   >
                     <Link href={href}>{label}</Link>
                   </Button>
