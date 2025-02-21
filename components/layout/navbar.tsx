@@ -97,7 +97,7 @@ export const Navbar = () => {
                     key={href}
                     onClick={() => setIsOpen(false)}
                     asChild
-                    variant="secondary"
+                    variant="ghost"
                     className="justify-start text-base text-white"
                   >
                     <Link href={href}>{label}</Link>
@@ -106,7 +106,7 @@ export const Navbar = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="justify-start text-base text-white"
+                  className="justify-start text-base"
                 >
                   <Link href="/masuk">Masuk</Link>
                 </Button>
