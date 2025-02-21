@@ -37,7 +37,7 @@ function ModulesCard(props: { data: any }) {
   return (
     <div className={"flex justify-start gap-4 flex-wrap items-center"}>
       {props.data.modules.map((arr, index) => (
-        <Card key={index} className={"w-44 h-64 relative"}>
+        <Card key={index} className={"md:w-44 md:h-64 flex-1 relative"}>
           <CardHeader>
             <p
               className={

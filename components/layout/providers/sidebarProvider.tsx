@@ -13,7 +13,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import isValidMongoId from "../../../util/isValidMongoId";
 import useCourse from "../../../hooks/use-course";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -76,108 +76,103 @@ export default function SidebarProvider({
   }, [logout.isSuccess, router]);
 
   return (
-    <Suspense>
-      <Provider>
-        <AppSidebar learningMode={learningMode as boolean} />
-        <SidebarInset>
-          <header className="w-[100%] md:hidden bg-white dark:bg-background z-50 mx-auto shadow flex justify-between items-center px-5 py-5 fixed">
-            <Link
-              href="/nubiacademy/public"
-              className="font-bold text-lg flex items-center md:hidden"
-            >
-              NUBI ACADEMY
-            </Link>
-            {learningModeAllCondition ? (
-              <div className="md:hidden">
-                <SidebarTrigger />
-              </div>
-            ) : (
-              <div className="md:hidden">
-                <Sheet>
-                  <SheetTrigger className="bg-gray-200 rounded-lg text-secondary p-2">
-                    Menu
-                  </SheetTrigger>
-                  <SheetContent
-                    side={"bottom"}
-                    className="flex justify-start flex-col"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`flex aspect-square items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground ring-1 ring-secondary`}
-                      >
-                        <Image
-                          src={"https://avatar.iran.liara.run/public"}
-                          height={32}
-                          width={32}
-                          alt="Nubi profil"
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-0.5 leading-none">
-                        <span className="font-semibold line-clamp-1 w-44 dark:text-gray-200">
-                          {user_data ? user_data[0].fullname : ""}
-                        </span>
-                      </div>
+    <Provider>
+      <AppSidebar learningMode={learningMode as boolean} />
+      <SidebarInset>
+        <header className="w-full bg-white dark:bg-background z-50 mx-auto shadow flex justify-between items-center px-5 py-5 md:hidden">
+          <Link href="/" className="font-bold text-lg flex items-center">
+            NUBI ACADEMY
+          </Link>
+          {learningModeAllCondition ? (
+            <div className="md:hidden">
+              <SidebarTrigger />
+            </div>
+          ) : (
+            <div className="md:hidden">
+              <Sheet>
+                <SheetTrigger className="bg-gray-200 rounded-lg text-secondary p-2">
+                  Menu
+                </SheetTrigger>
+                <SheetContent
+                  side={"bottom"}
+                  className="flex justify-start flex-col"
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`flex aspect-square items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground ring-1 ring-secondary`}
+                    >
+                      <Image
+                        src={"https://avatar.iran.liara.run/public"}
+                        height={32}
+                        width={32}
+                        alt="Nubi profil"
+                      />
                     </div>
-                    <SheetHeader>
-                      {items.map((arr, index) => (
-                        <div key={index}>
-                          <SheetTitle className="text-start text-sm dark:text-gray-200 mb-2">
-                            {arr.title}
-                          </SheetTitle>
-                          <SheetDescription className="text-start flex flex-wrap gap-2">
-                            {arr.items?.map((item, index) => (
-                              <Button
-                                size={"sm"}
-                                variant={"outline"}
-                                key={index}
-                                className={`text-secondary dark:text-gray-200 border-secondary dark:border-gray-200 ${position === item.url && "bg-gray-200 border-0 dark:text-secondary"}`}
-                                asChild
+
+                    <div className="flex flex-col gap-0.5 leading-none">
+                      <span className="font-semibold line-clamp-1 w-44 dark:text-gray-200">
+                        {user_data ? user_data[0].fullname : ""}
+                      </span>
+                    </div>
+                  </div>
+                  <SheetHeader>
+                    {items.map((arr, index) => (
+                      <div key={index}>
+                        <SheetTitle className="text-start text-sm dark:text-gray-200 mb-2">
+                          {arr.title}
+                        </SheetTitle>
+                        <SheetDescription className="text-start flex flex-wrap gap-2">
+                          {arr.items?.map((item, index) => (
+                            <Button
+                              size={"sm"}
+                              variant={"outline"}
+                              key={index}
+                              className={`text-secondary dark:text-gray-200 border-secondary dark:border-gray-200 ${position === item.url && "bg-gray-200 border-0 dark:text-secondary"}`}
+                              asChild
+                            >
+                              <Link
+                                href={`/dashboard/${arr.url}?position=${item.url}`}
                               >
-                                <Link
-                                  href={`/dashboard/${arr.url}?position=${item.url}`}
-                                >
-                                  {item.icon}
-                                  {item.title}
-                                </Link>
-                              </Button>
-                            ))}
-                          </SheetDescription>
-                        </div>
-                      ))}
-                    </SheetHeader>
-                    <div className="flex justify-between items-center flex-wrap-reverse">
-                      <Button
-                        variant={"outline"}
-                        onClick={() => {
-                          logout.mutate();
-                        }}
-                        className="w-auto bg-none border-0 text-destructive dark:text-destructive dark:text-red-500"
-                      >
-                        <LogOut />
-                        <span>Keluar</span>
-                      </Button>
-
-                      <div className="size-8 flex justify-center items-center">
-                        <ToggleTheme />
+                                {item.icon}
+                                {item.title}
+                              </Link>
+                            </Button>
+                          ))}
+                        </SheetDescription>
                       </div>
+                    ))}
+                  </SheetHeader>
+                  <div className="flex justify-between items-center flex-wrap-reverse">
+                    <Button
+                      variant={"outline"}
+                      onClick={() => {
+                        logout.mutate();
+                      }}
+                      className="w-auto bg-none border-0 text-destructive dark:text-destructive dark:text-red-500"
+                    >
+                      <LogOut />
+                      <span>Keluar</span>
+                    </Button>
+
+                    <div className="size-8 flex justify-center items-center">
+                      <ToggleTheme />
                     </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-            )}
-          </header>
-          {learningModeAllCondition && (
-            <CourseNavigation
-              router={router}
-              params={params}
-              pathname={pathname}
-            />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           )}
-          {children}
-        </SidebarInset>
-      </Provider>
-    </Suspense>
+        </header>
+        {learningModeAllCondition && (
+          <CourseNavigation
+            router={router}
+            params={params}
+            pathname={pathname}
+          />
+        )}
+        {children}
+      </SidebarInset>
+    </Provider>
   );
 }
 

@@ -35,7 +35,7 @@
     "cookies-next": "^5.0.2",
     "dexie": "^4.0.10",
     "dexie-react-hooks": "^1.1.7",
-    "embla-carousel-react": "^8.5.1",
+    "embla-carousel-react": "^8.5.2",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.468.0",

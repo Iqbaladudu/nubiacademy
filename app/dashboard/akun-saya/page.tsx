@@ -1,7 +1,6 @@
 "use client";
 import Profile from "@/components/layout/pages/profile";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
 export default function AccountPage() {
   const params = useSearchParams();
@@ -14,13 +13,11 @@ export default function AccountPage() {
 
   return (
     <>
-      <Suspense>
-        {!components[position] ? (
-          <div>Tidak ditemukan</div>
-        ) : (
-          components[position]
-        )}
-      </Suspense>
+      {!components[position] ? (
+        <div>Tidak ditemukan</div>
+      ) : (
+        components[position]
+      )}
     </>
   );
 }

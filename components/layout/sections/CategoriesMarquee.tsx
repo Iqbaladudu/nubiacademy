@@ -40,7 +40,7 @@ const sponsors2: sponsorsProps[] = [
     name: "Microsoft Excel",
   },
   {
-    name: "Bahasa Aran",
+    name: "Bahasa Arab",
   },
   {
     name: "Basic Life Skill",
