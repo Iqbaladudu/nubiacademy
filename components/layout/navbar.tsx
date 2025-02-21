@@ -37,6 +37,18 @@ const routeList: RouteProps[] = [
     href: "/kelas",
     label: "Lihat kelas",
   },
+  {
+    href: "#",
+    label: "Tentang Kami",
+  },
+  {
+    href: "#",
+    label: "Kontak",
+  },
+  {
+    href: "#",
+    label: "Pertanyaan",
+  },
 ];
 
 export const Navbar = () => {
