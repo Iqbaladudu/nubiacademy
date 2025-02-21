@@ -1,26 +1,41 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto h-12 w-12 text-primary" />
-        <h1 className="mt-4 text-6xl font-bold tracking-tight text-foreground sm:text-7xl">
-          404
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Ups, halaman yang kamu cari tidak ditemukan
-        </p>
-        <div className="mt-6">
-          <Link
-            href="/"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            prefetch={false}
-          >
-            Halaman utama
-          </Link>
-        </div>
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <div className="flex justify-center mb-4">
+            <span className="text-8xl">🙈</span>
+          </div>
+          <CardTitle className="text-3xl font-bold text-center">
+            Oops! Page Not Found
+          </CardTitle>
+          <CardDescription className="text-center">
+            It seems you've wandered into uncharted territory!
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground">
+            The page you're looking for doesn't exist or has been moved to a new
+            address.
+          </p>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button asChild>
+            <Link href="/">Take Me Home</Link>
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
