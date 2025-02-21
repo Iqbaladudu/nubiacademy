@@ -14,7 +14,6 @@ import { db } from "@/db";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next/client";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { ToggleTheme } from "../toggle-theme";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
