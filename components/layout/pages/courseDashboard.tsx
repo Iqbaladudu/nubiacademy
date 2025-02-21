@@ -143,13 +143,13 @@ export default function CourseDashboard() {
               <CardHeader>
                 <div>
                   <Badge
-                    className={`text-white bg-dark-blue hover:bg-dark-blue ${!arr.category_name && "hidden"}`}
+                    className={`text-white bg-secondary hover:bg-secondary ${!arr.category_name && "hidden"}`}
                   >
                     {arr.category_name}
                   </Badge>
                   <Badge
                     variant={"outline"}
-                    className={`text-dark-blue border-dark-blue ml-2  ${!arr.level && "hidden"}`}
+                    className={`text-secondary dark:text-white dark:border-white border-secondary ml-2 bg-se ${!arr.level && "hidden"}`}
                   >
                     {arr.level}
                   </Badge>
@@ -182,7 +182,7 @@ export default function CourseDashboard() {
                       ) : (
                         <Badge
                           variant={"outline"}
-                          className="text-secondary border-secondary dark:text-gray-200 dark:border-200"
+                          className="text-secondary border-secondary dark:text-secondary dark:border-secondary"
                         >
                           Gratis
                         </Badge>
@@ -204,7 +204,7 @@ export default function CourseDashboard() {
                 <Button
                   asChild
                   size={"sm"}
-                  className={`text-white ${position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false ? "w-28" : "w-auto"} bg-dark-blue hover:bg-dark-blue`}
+                  className={`text-white ${position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false ? "w-28" : "w-auto"} bg-secondary hover:bg-secondary`}
                 >
                   {position === POSITION.JELAJAHI_KELAS_BARU &&
                   arr.mine === false ? (

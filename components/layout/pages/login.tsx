@@ -12,18 +12,16 @@ export default async function LoginPage({
   const { from, username } = await searchParams;
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="absolute container h-9 top-9 flex justify-between">
+    <div className="h-[100vh] flex justify-center items-center">
+      <div className="container absolute h-9 top-9 flex justify-between">
         <Button variant={"ghost"} asChild>
-          <Link href={"/"}>
-            {<Icn name="ChevronLeft" size={24} color="black" />} Kembali
-          </Link>
+          <Link href={"/"}>{<Icn name="ChevronLeft" size={24} />} Kembali</Link>
         </Button>
         <Button variant={"ghost"} className="hidden md:flex" asChild>
           <Link href={"/daftar"}>Daftar</Link>
         </Button>
       </div>
-      <div className="container h-[800px] my-auto mx-auto flex justify-center items-center">
+      <div className="container my-auto mx-auto flex justify-center items-center">
         <div className="w-[90%] md:w-[50%] lg:w-[25%]">
           <div className="flex flex-col space-y-2 mb-3 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -55,9 +53,9 @@ export default async function LoginPage({
             </Link>
             .
           </p> */}
-          <div className="flex flex-col justify-center items-center mt-4">
+          <div className="flex flex-row gap-2 justify-center items-center mt-4">
             <p className="text-muted-foreground">Belum punya akun?</p>
-            <Button variant={"outline"} asChild>
+            <Button size="sm" variant={"ghost"} asChild>
               <Link href={"/daftar"}>Daftar sekarang</Link>
             </Button>
           </div>

@@ -4,14 +4,15 @@
 import {
   ChevronDown,
   ChevronRight,
+  FileText,
   LayoutGrid,
-  LetterText,
   LoaderCircle,
   LogOut,
   SquareCheck,
   SquareChevronLeft,
   SquarePlay,
   User,
+  WalletCards,
 } from "lucide-react";
 
 import {
@@ -48,6 +49,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { Button } from "../ui/button";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import { useLessonPositionStore } from "./providers/lesson-position-provider";
 
 export interface Items {
   title: string;
@@ -90,11 +92,11 @@ export const items: Items[] = [
     icon: null,
     items: [
       { title: "Profil", url: "profil", icon: <User /> },
-      // {
-      //   title: "Keamanan",
-      //   url: "keamanan",
-      //   icon: <LockKeyhole />,
-      // },
+      {
+        title: "Transaksi",
+        url: "riwayat-transaksi",
+        icon: <WalletCards />,
+      },
     ],
   },
 ];
@@ -116,7 +118,7 @@ function SidebarNormalMenuHeader(props: {
         />
       </div>
       {props.state !== "collapsed" && (
-        <div className="flex flex-col gap-0.5 leading-none">
+        <div className="flex flex-col gap-0.5">
           <span className="font-semibold line-clamp-1 w-44">{props.name}</span>
         </div>
       )}
@@ -170,6 +172,7 @@ function SidebarDefaultContents({
 export function AppSidebar({ learningMode }: { learningMode: boolean }) {
   const { state } = useSidebar();
   const [back, setBack] = useState<string>();
+  const { current } = useLessonPositionStore((state) => state);
 
   const params = useSearchParams();
   const router = useRouter();
@@ -191,7 +194,6 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
     mutationFn: async () => {
       return axios.post("/api/logout");
     },
-    onSuccess: async () => db.user.where("id").notEqual("").delete(),
   });
 
   const data = my_class.data?.data.docs[0];
@@ -205,6 +207,7 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
   useEffect(() => {
     if (logout.isSuccess) {
       router.push("/masuk");
+      db.user.where("id").notEqual("").delete();
     }
   }, [logout.isSuccess, router]);
 
@@ -226,7 +229,7 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
           <Button
             variant={"outline"}
             size={"sm"}
-            className="w-5/12 hidden md:flex"
+            className="md:w-5/12 w-auto bg-invert dark:border-white"
             disabled={!back ? true : false}
             onClick={() => back && router.push(back as string)}
           >
@@ -241,7 +244,9 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
             </p>
           ) : (
             <SidebarNormalMenuHeader
-              name={user_data ? user_data[0].fullname : ""}
+              name={
+                user_data && user_data.length > 0 ? user_data[0].fullname : ""
+              }
               state={state}
             />
           )}
@@ -275,13 +280,13 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
                               onClick={() =>
                                 router.push(`${pathname}?lesson=${content.id}`)
                               }
-                              className={"h-auto"}
+                              className={`h-auto ${current.lesson_id === content.id && "bg-gray-100 dark:bg-transparent dark:border dark:border-white"}`}
                               size={"sm"}
                             >
                               {content.contain_video ? (
                                 <SquarePlay size={14} />
                               ) : (
-                                <LetterText size={14} />
+                                <FileText size={14} />
                               )}
                               <span
                                 data-tooltip-id="my-tooltip"

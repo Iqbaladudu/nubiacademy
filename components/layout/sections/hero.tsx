@@ -30,9 +30,14 @@ export const Hero = () => {
           </p>
 
           <div className="space-y-4 md:space-y-0 md:space-x-4">
-            <Button className="w-5/6 md:w-1/4 font-bold group/arrow dark:text-white">
-              Mulai Sekarang
-              <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
+            <Button
+              asChild
+              className="w-5/6 md:w-1/4 font-bold group/arrow dark:text-white"
+            >
+              <Link href={"/kelas"}>
+                Buka kelas
+                <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
+              </Link>
             </Button>
 
             <Button
@@ -40,7 +45,7 @@ export const Hero = () => {
               variant="outline"
               className="w-5/6 md:w-1/4 font-bold"
             >
-              <Link href="#">Tentang Kami</Link>
+              <Link href="/daftar">Daftar</Link>
             </Button>
           </div>
         </div>

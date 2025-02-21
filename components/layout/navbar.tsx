@@ -34,16 +34,8 @@ interface RouteProps {
 
 const routeList: RouteProps[] = [
   {
-    href: "#",
-    label: "Tentang Kami",
-  },
-  {
-    href: "#",
-    label: "Kontak",
-  },
-  {
-    href: "#",
-    label: "Pertanyaan",
+    href: "/kelas",
+    label: "Lihat kelas",
   },
 ];
 
@@ -93,8 +85,8 @@ export const Navbar = () => {
                     key={href}
                     onClick={() => setIsOpen(false)}
                     asChild
-                    variant="ghost"
-                    className="justify-start text-base"
+                    variant="secondary"
+                    className="justify-start text-base text-white"
                   >
                     <Link href={href}>{label}</Link>
                   </Button>
@@ -102,7 +94,7 @@ export const Navbar = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="justify-start text-base"
+                  className="justify-start text-base text-white"
                 >
                   <Link href="/masuk">Masuk</Link>
                 </Button>
@@ -189,10 +181,10 @@ export const Navbar = () => {
           </Button>
         ) : (
           <>
-            <Button asChild className="mx-3">
+            <Button variant="secondary" asChild className="mx-3 text-white">
               <Link href="/masuk">Masuk</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="text-white dark:bg-background border">
               <Link href="/daftar">Daftar</Link>
             </Button>
           </>

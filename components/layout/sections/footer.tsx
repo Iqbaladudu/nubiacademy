@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const Footer = () => {
   return (
-    <footer id="footer" className="container py-24 sm:py-32 mx-auto">
+    <footer id="footer" className="container">
       <div className="p-10 bg-card rounded-2xl">
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-x-12 gap-y-8 content-between">
           <div className="col-span-full xl:col-span-2">
@@ -74,7 +74,7 @@ export const Footer = () => {
 
         <Separator className="my-6" />
         <section className="">
-          <h3 className="">&copy; 2024 Developed by NUBI ACADEMY</h3>
+          <h3 className="">&copy; 2025 Developed by NUBI ACADEMY</h3>
         </section>
       </div>
     </footer>

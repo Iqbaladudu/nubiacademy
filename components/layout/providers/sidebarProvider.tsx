@@ -35,6 +35,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/db";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useLessonPositionStore } from "@/components/layout/providers/lesson-position-provider";
+import { useMediaQuery } from "usehooks-ts";
 
 export default function SidebarProvider({
   children,
@@ -51,6 +52,8 @@ export default function SidebarProvider({
   const [learningMode, setLearningMode] = useState<boolean>();
   const { course } = useCourse();
   const learningModeAllCondition = learningMode && course;
+  const { current } = useLessonPositionStore((state) => state);
+  const match = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (is_kelas_route_available && is_valid_module_id) {
@@ -66,12 +69,12 @@ export default function SidebarProvider({
     mutationFn: async () => {
       return axios.post("/api/logout");
     },
-    onSuccess: async () => db.user.where("id").notEqual("").delete(),
   });
 
   useEffect(() => {
     if (logout.isSuccess) {
       router.push("/masuk");
+      db.user.where("id").notEqual("").delete();
     }
   }, [logout.isSuccess, router]);
 
@@ -79,90 +82,97 @@ export default function SidebarProvider({
     <Provider>
       <AppSidebar learningMode={learningMode as boolean} />
       <SidebarInset>
-        <header className="w-full bg-white dark:bg-background z-50 mx-auto shadow flex justify-between items-center px-5 py-5 md:hidden">
-          <Link href="/" className="font-bold text-lg flex items-center">
-            NUBI ACADEMY
-          </Link>
-          {learningModeAllCondition ? (
-            <div className="md:hidden">
-              <SidebarTrigger />
-            </div>
-          ) : (
-            <div className="md:hidden">
-              <Sheet>
-                <SheetTrigger className="bg-gray-200 rounded-lg text-secondary p-2">
-                  Menu
-                </SheetTrigger>
-                <SheetContent
-                  side={"bottom"}
-                  className="flex justify-start flex-col"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`flex aspect-square items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground ring-1 ring-secondary`}
-                    >
-                      <Image
-                        src={"https://avatar.iran.liara.run/public"}
-                        height={32}
-                        width={32}
-                        alt="Nubi profil"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-0.5 leading-none">
-                      <span className="font-semibold line-clamp-1 w-44 dark:text-gray-200">
-                        {user_data ? user_data[0].fullname : ""}
-                      </span>
-                    </div>
-                  </div>
-                  <SheetHeader>
-                    {items.map((arr, index) => (
-                      <div key={index}>
-                        <SheetTitle className="text-start text-sm dark:text-gray-200 mb-2">
-                          {arr.title}
-                        </SheetTitle>
-                        <SheetDescription className="text-start flex flex-wrap gap-2">
-                          {arr.items?.map((item, index) => (
-                            <Button
-                              size={"sm"}
-                              variant={"outline"}
-                              key={index}
-                              className={`text-secondary dark:text-gray-200 border-secondary dark:border-gray-200 ${position === item.url && "bg-gray-200 border-0 dark:text-secondary"}`}
-                              asChild
-                            >
-                              <Link
-                                href={`/dashboard/${arr.url}?position=${item.url}`}
-                              >
-                                {item.icon}
-                                {item.title}
-                              </Link>
-                            </Button>
-                          ))}
-                        </SheetDescription>
+        {match && (
+          <header className="w-full bg-white dark:bg-background z-50 mx-auto shadow flex justify-between items-center px-5 py-5 md:hidden">
+            <Link
+              href="/"
+              className="font-bold text-md flex items-center w-[80%] line-clamp-2"
+            >
+              {learningModeAllCondition ? current.title : "NUBI ACADEMY"}
+            </Link>
+            {learningModeAllCondition ? (
+              <div className="">
+                <SidebarTrigger />
+              </div>
+            ) : (
+              <div className="">
+                <Sheet>
+                  <SheetTrigger className="bg-gray-200 rounded-lg text-secondary p-2">
+                    Menu
+                  </SheetTrigger>
+                  <SheetContent
+                    side={"bottom"}
+                    className="flex justify-start flex-col"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`flex aspect-square items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground ring-1 ring-secondary`}
+                      >
+                        <Image
+                          src={"https://avatar.iran.liara.run/public"}
+                          height={32}
+                          width={32}
+                          alt="Nubi profil"
+                        />
                       </div>
-                    ))}
-                  </SheetHeader>
-                  <div className="flex justify-between items-center flex-wrap-reverse">
-                    <Button
-                      variant={"outline"}
-                      onClick={() => {
-                        logout.mutate();
-                      }}
-                      className="w-auto bg-none border-0 text-destructive dark:text-destructive dark:text-red-500"
-                    >
-                      <LogOut />
-                      <span>Keluar</span>
-                    </Button>
 
-                    <div className="size-8 flex justify-center items-center">
-                      <ToggleTheme />
+                      <div className="flex flex-col gap-0.5 leading-none">
+                        <span className="font-semibold line-clamp-2 w-44 dark:text-gray-200">
+                          {user_data && user_data.length > 0
+                            ? user_data[0].fullname
+                            : ""}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          )}
-        </header>
+                    <SheetHeader>
+                      {items.map((arr, index) => (
+                        <div key={index}>
+                          <SheetTitle className="text-start text-sm dark:text-gray-200 mb-2">
+                            {arr.title}
+                          </SheetTitle>
+                          <SheetDescription className="text-start flex flex-wrap gap-2">
+                            {arr.items?.map((item, index) => (
+                              <Button
+                                size={"sm"}
+                                variant={"outline"}
+                                key={index}
+                                className={`text-secondary dark:text-gray-200 border-secondary dark:border-gray-200 ${position === item.url && "bg-gray-200 border-0 dark:text-secondary"}`}
+                                asChild
+                              >
+                                <Link
+                                  href={`/dashboard/${arr.url}?position=${item.url}`}
+                                >
+                                  {item.icon}
+                                  {item.title}
+                                </Link>
+                              </Button>
+                            ))}
+                          </SheetDescription>
+                        </div>
+                      ))}
+                    </SheetHeader>
+                    <div className="flex justify-between items-center flex-wrap-reverse">
+                      <Button
+                        variant={"outline"}
+                        onClick={() => {
+                          logout.mutate();
+                        }}
+                        className="w-auto bg-none border-0 text-destructive dark:text-destructive dark:text-red-500"
+                      >
+                        <LogOut />
+                        <span>Keluar</span>
+                      </Button>
+
+                      <div className="size-8 flex justify-center items-center">
+                        <ToggleTheme />
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            )}
+          </header>
+        )}
         {learningModeAllCondition && (
           <CourseNavigation
             router={router}

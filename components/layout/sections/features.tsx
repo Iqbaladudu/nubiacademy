@@ -31,7 +31,7 @@ const featureList: FeaturesProps[] = [
     icon: "ShieldCheck",
     title: "Sertifikat Apresiasi",
     description:
-      "Dapatkan sertifikat pembelajaran sebagai apresiasi untukmu yang telah menyelesaikan proses belajar dan ujoan akhir",
+      "Dapatkan sertifikat pembelajaran sebagai apresiasi untukmu yang telah menyelesaikan proses belajar dan ujian akhir",
   },
 ];
 

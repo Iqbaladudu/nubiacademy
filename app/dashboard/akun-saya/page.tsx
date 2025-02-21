@@ -1,14 +1,16 @@
-"use client";
 import Profile from "@/components/layout/pages/profile";
-import { useSearchParams } from "next/navigation";
+import RiwayatTransaksi from "@/components/layout/pages/riwayatTransaksi";
 
-export default function AccountPage() {
-  const params = useSearchParams();
-  const position = params.get("position");
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ position: string }>;
+}) {
+  const position = (await searchParams).position;
 
   const components = {
     profil: <Profile />,
-    keamanan: <Profile />,
+    "riwayat-transaksi": <RiwayatTransaksi />,
   };
 
   return (

@@ -7,7 +7,7 @@ export const Icn = ({
   className,
 }: {
   name: keyof typeof icons;
-  color: string;
+  color?: string;
   size: number;
   className?: string;
 }) => {
