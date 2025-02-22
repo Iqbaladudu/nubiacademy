@@ -21,13 +21,13 @@ export default function NotFound() {
             Oops! Page Not Found
           </CardTitle>
           <CardDescription className="text-center">
-            It seems you've wandered into uncharted territory!
+            It seems you have wandered into uncharted territory!
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-center text-muted-foreground">
-            The page you're looking for doesn't exist or has been moved to a new
-            address.
+            The page you are looking for does not exist or has been moved to a
+            new address.
           </p>
         </CardContent>
         <CardFooter className="flex justify-center">
