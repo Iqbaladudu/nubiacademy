@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
       { hostname: "placehold.co" },
       { hostname: "localhost" },
       { hostname: "avatar.iran.liara.run" },
+      {
+        protocol: "https",
+        hostname: `rk3noxxioh.ufs.sh`,
+        pathname: "/f/*",
+      },
     ],
   },
 };

@@ -50,7 +50,7 @@ export default async function Page({
             <Image
               height={kelasOne.thumbnail.height}
               width={kelasOne.thumbnail.width}
-              src={`${process.env.MAIN}/${kelasOne.thumbnail.url}`}
+              src={`${kelasOne.thumbnail.url}`}
               alt={kelasOne.name}
               className="w-[250px] h-[250px] object-cover mx-auto md:mx-0"
             />
@@ -75,9 +75,11 @@ export default async function Page({
               </Badge>
             </div>
             <p className="text-xl font-bold my-2">{kelasOne.name}</p>
-            <p>{kelasOne.short_description}</p>
+            <p className=" line-clamp-3">{kelasOne.short_description}</p>
             <div className="p-0 flex text-secondary items-center justify-between">
-              <p className="text-xl font-bold">{toIDRFormat(kelasOne.price)}</p>
+              <p className="text-xl font-bold dark:text-gray-300">
+                {toIDRFormat(kelasOne.price)}
+              </p>
               <Button
                 size="default"
                 className="dark:text-white dark:bg-secondary"

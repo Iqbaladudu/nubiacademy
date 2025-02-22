@@ -18,7 +18,10 @@ import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { v7 as uuidv7 } from "uuid";
+import { customAlphabet } from "nanoid";
+
+const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const nanoid = customAlphabet(alphabet, 13);
 
 const Spinner = () => {
   return (
@@ -250,7 +253,7 @@ export default function Page() {
           onClick={() =>
             create_order.mutate({
               course_item: `${data?.id}`,
-              order_number: `NUBI-${uuidv7()}`,
+              order_number: `NUBI-${nanoid()}`,
               coupon_code: check_coupon.data?.data.docs[0].id || "",
             })
           }
