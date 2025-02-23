@@ -14,6 +14,7 @@ import { db } from "@/db";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next/client";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import Link from "next/link";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -127,6 +128,9 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               </span>
             </Button>
           </div>
+          <Link href={"#"} className="text-sm">
+            Lupa kata sandi
+          </Link>
           <Button
             disabled={isLoading}
             variant="secondary"
