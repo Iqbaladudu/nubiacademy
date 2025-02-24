@@ -41,24 +41,24 @@ export default function RiwayatTransaksi() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              {my_order.isSuccess && my_order.data.data.docs.length > 0 ? (
-                my_order.data.data.docs.map((arr) => (
-                  <>
-                    <TableCell>{arr.order_number}</TableCell>
-                    <TableCell>
-                      {toIDRFormat(arr.total_amount as number)}
-                    </TableCell>
-                    <TableCell>{arr.status}</TableCell>
-                    <TableCell>
-                      {formatDateTime(arr.updatedAt as string)}
-                    </TableCell>
-                  </>
-                ))
-              ) : (
+            {my_order.isSuccess && my_order.data.data.docs.length > 0 ? (
+              my_order.data.data.docs.map((arr) => (
+                <TableRow key={arr.id}>
+                  <TableCell>{arr.order_number}</TableCell>
+                  <TableCell>
+                    {toIDRFormat(arr.total_amount as number)}
+                  </TableCell>
+                  <TableCell>{arr.status}</TableCell>
+                  <TableCell>
+                    {formatDateTime(arr.updatedAt as string)}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
                 <TableCell>Belum ada transaksi</TableCell>
-              )}
-            </TableRow>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
