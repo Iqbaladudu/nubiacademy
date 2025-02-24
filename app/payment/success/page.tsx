@@ -40,7 +40,7 @@ export default async function Success({
               </Link>
             </Button>
             <Button variant="outline" className="flex-1" asChild>
-              <Link href="/dashboard/order">
+              <Link href="/dashboard/akun-saya?position=riwayat-transaksi">
                 <Receipt className="mr-2 h-4 w-4" />
                 Lihat pemesanan
               </Link>
