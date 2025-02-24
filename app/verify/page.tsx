@@ -38,11 +38,11 @@ export default function VerificationSuccess() {
 
   return (
     <div className="min-h-screen bg-gradient-to-tl from-primary/15 to-secondary/10 flex items-center justify-center p-4 relative overflow-hidden">
-      {!verify_email.isSuccess && (
+      {verify_email.isSuccess && (
         <Success variant="primary" onContinue={() => router.push("/masuk")} />
       )}
 
-      {/* {verify_email.isLoading && (
+      {verify_email.isLoading && (
         <Loading
           title="Sedang melakukan verifikasi..."
           message="Mohon tunggu beberapa saat hingga kami selesai melakukan verifikasi."
@@ -59,7 +59,7 @@ export default function VerificationSuccess() {
             message={"Terjadi kesalahan saat melakukan verifikasi email."}
           />
         </div>
-      )} */}
+      )}
     </div>
   );
 }
