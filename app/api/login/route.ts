@@ -29,8 +29,7 @@ export async function POST(request: Request) {
         }
       );
     }
-  } catch (error) {
-    console.log(error);
+  } catch {
     return new Response(
       JSON.stringify({
         message: "Terjadi kesalahan",

@@ -124,7 +124,7 @@ export default function CourseDashboard() {
   return (
     <div className="min-h-full h-full">
       <div className="grid grid-cols-1 justify-self-center lg:grid-cols-2 xl:grid-cols-none xl:flex xl:justify-start xl:justify-self-start xl:flex-wrap gap-3">
-        <div className="col-span-1 lg:col-span-2 xl:w-full mt-20 md:mt-0">
+        <div className="col-span-1 lg:col-span-2 xl:w-full mt-2 md:mt-0">
           <div>{HEADER[position]}</div>
         </div>
         {my_classes.isLoading && (

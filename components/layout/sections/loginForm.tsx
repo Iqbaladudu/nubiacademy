@@ -128,7 +128,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
               </span>
             </Button>
           </div>
-          <Link href={"#"} className="text-sm">
+          <Link href={"/masuk/lupa-sandi"} className="text-sm">
             Lupa kata sandi
           </Link>
           <Button
