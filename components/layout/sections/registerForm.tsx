@@ -48,7 +48,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
   useEffect(() => {
     if (daftar.isSuccess) {
       toast.success("Pendaftaran berhasil!", { duration: 2000 });
-      router.push(`/masuk/success?email=${daftar.data.data.doc.email}`);
+      router.push(`/daftar/success?email=${daftar.data.data.doc.email}`);
       return;
     } else if (daftar?.isError) {
       toast.warning("Gagal, periksa kembali data yang kamu!", {
