@@ -226,26 +226,30 @@ function CourseNavigation({
   ]);
 
   return (
-    <div className="absolute flex justify-between bottom-0 w-full px-5 pb-2 z-50">
-      <Button
-        variant={"outline"}
-        disabled={previous?.lesson_id?.length < 1}
-        size={"sm"}
-        onClick={() => router.push(`${pathname}?lesson=${previous?.lesson_id}`)}
-      >
-        Sebelumnya
-      </Button>
-      <p className="text-lg font-semibold hidden md:flex text-center">
-        {current.title}
-      </p>
-      <Button
-        variant={"outline"}
-        disabled={next?.lesson_id?.length < 1}
-        size={"sm"}
-        onClick={() => router.push(`${pathname}?lesson=${next?.lesson_id}`)}
-      >
-        Selanjutnya
-      </Button>
+    <div className="fixed bg-white shadow-sm border-t w-full right-0 bottom-0 z-50">
+      <div className="w-[100%] flex justify-between items-center py-2 px-2">
+        <Button
+          variant={"outline"}
+          disabled={previous?.lesson_id?.length < 1}
+          size={"sm"}
+          onClick={() =>
+            router.push(`${pathname}?lesson=${previous?.lesson_id}`)
+          }
+        >
+          Sebelumnya
+        </Button>
+        <p className="text-lg font-semibold hidden md:flex text-center">
+          {current.title}
+        </p>
+        <Button
+          variant={"outline"}
+          disabled={next?.lesson_id?.length < 1}
+          size={"sm"}
+          onClick={() => router.push(`${pathname}?lesson=${next?.lesson_id}`)}
+        >
+          Selanjutnya
+        </Button>
+      </div>
     </div>
   );
 }

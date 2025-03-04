@@ -6,6 +6,7 @@ import {
   ChevronRight,
   FileText,
   LayoutGrid,
+  ListCollapse,
   LoaderCircle,
   LogOut,
   SquareCheck,
@@ -173,6 +174,7 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
   const { state } = useSidebar();
   const [back, setBack] = useState<string>();
   const { current } = useLessonPositionStore((state) => state);
+  const { toggleSidebar } = useSidebar();
 
   const params = useSearchParams();
   const router = useRouter();
@@ -223,19 +225,33 @@ export function AppSidebar({ learningMode }: { learningMode: boolean }) {
   }, [pathname, setBack]);
 
   return (
-    <Sidebar collapsible={learningModeAllCondition ? "offcanvas" : "icon"}>
+    <Sidebar
+      collapsible={learningModeAllCondition ? "offcanvas" : "icon"}
+      variant={learningModeAllCondition ? "floating" : "sidebar"}
+    >
       <SidebarHeader className="pl-4 mt-4">
         {learningModeAllCondition && (
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            className="md:w-5/12 w-auto bg-invert dark:border-white"
-            disabled={!back ? true : false}
-            onClick={() => back && router.push(back as string)}
-          >
-            <SquareChevronLeft />
-            Kembali
-          </Button>
+          <div className="flex justify-between">
+            <Button
+              variant={"outline"}
+              size={"sm"}
+              className="md:w-5/12 w-auto bg-invert dark:border-white"
+              disabled={!back ? true : false}
+              onClick={() => back && router.push(back as string)}
+            >
+              <SquareChevronLeft />
+              Kembali
+            </Button>
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              className="md:w-5/12 w-auto bg-invert dark:border-white"
+              disabled={!back ? true : false}
+              onClick={() => toggleSidebar()}
+            >
+              <ListCollapse />
+            </Button>
+          </div>
         )}
         <SidebarMenu>
           {learningModeAllCondition ? (

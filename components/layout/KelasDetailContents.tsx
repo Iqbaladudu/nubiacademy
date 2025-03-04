@@ -79,7 +79,7 @@ export function KelasDetailContents(props: { slug: any }) {
     <>
       {my_class.isSuccess && data && (
         <>
-          <div className="mt-20 md:mt-0">
+          <div>
             <h1 className="prose text-3xl font-bold dark:text-white">
               {data.name}
             </h1>
