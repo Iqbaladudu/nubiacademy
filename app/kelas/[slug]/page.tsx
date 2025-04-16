@@ -1,136 +1,90 @@
 import { Navbar } from "@/components/layout/navbar";
-import Image from "next/image";
-import { RichText } from "@payloadcms/richtext-lexical/react";
 import { Footer } from "@/components/layout/sections/footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import Link from "next/link";
 import axios from "axios";
-import { toIDRFormat } from "@/lib/utils";
+// Pastikan path import CourseDetails sudah benar sesuai struktur folder Anda
+import CourseDetails from "@/components/kelas/course-details"; // <-- Impor Client Component
 
-export const dynamicParams = true;
+export const dynamicParams = true; // Optional: Sesuaikan jika perlu
 
+// Fungsi untuk generate static paths jika menggunakan SSG
 export async function generateStaticParams() {
-  const course = await axios
-    .get(`${process.env.LOCAL_ENDPOINT}/course`)
-    .then((res) => res.data.docs);
-
-  return course.map((course) => ({
-    slug: course.slug,
-  }));
+  try {
+    const response = await axios.get(`${process.env.LOCAL_ENDPOINT}/course`);
+    const courses = response.data.docs || []; // Pastikan docs ada
+    return courses.map((course: any) => ({
+      slug: course.slug,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch courses for static params:", error);
+    return []; // Return empty array on error
+  }
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const slug = (await params).slug;
+// Tipe props untuk Page component
+interface PageProps {
+  params: { slug: string };
+}
 
-  const fetchKelas = await axios.get(
-    `${process.env.LOCAL_ENDPOINT}/course?where[slug][equals]=${slug}`
-  );
+export default async function Page({ params }: PageProps) {
+  const { slug } = params; // Akses slug langsung
 
-  const kelasOne = await fetchKelas.data.docs[0];
+  try {
+    const fetchKelas = await axios.get(
+      `${process.env.LOCAL_ENDPOINT}/course?where[slug][equals]=${slug}`,
+    );
 
-  return (
-    <main>
-      <Navbar />
-      <section className="flex flex-col justify-center mx-auto mt-5 max-w-5xl px-5">
-        {/* course image */}
-        <div className="flex flex-col md:flex-row gap-3 sm:flex-row">
-          <div className="">
-            <Image
-              height={kelasOne.thumbnail.height}
-              width={kelasOne.thumbnail.width}
-              src={`${kelasOne.thumbnail.url}`}
-              alt={kelasOne.name}
-              className="w-[250px] h-[250px] object-cover mx-auto md:mx-0"
-            />
-          </div>
-          {/* course details */}
-          <div className="prose dark:prose-invert">
-            <div>
-              {/* <Badge className="text-xs md:text-sm dark:text-white dark:bg-secondary">
-                {toIDRFormat(kelasOne.price)}
-              </Badge> */}
-              <Badge
-                variant="outline"
-                className="text-gray-600 dark:text-gray-300 text-xs md:text-sm ml-1"
-              >
-                Kategori: {kelasOne.category_name}
-              </Badge>
-              <Badge
-                className="ml-1 text-gray-600 text-xs md:text-sm dark:text-gray-300"
-                variant="outline"
-              >
-                Level: {kelasOne.level}
-              </Badge>
-            </div>
-            <p className="text-xl font-bold my-2">{kelasOne.name}</p>
-            <p className=" line-clamp-3">{kelasOne.short_description}</p>
-            <div className="p-0 flex text-secondary items-center justify-between">
-              <p className="text-xl font-bold dark:text-gray-300">
-                {toIDRFormat(kelasOne.price)}
-              </p>
-              <Button
-                size="default"
-                className="dark:text-white dark:bg-secondary"
-                asChild
-              >
-                <Link
-                  href={`/kelas/${slug}/checkout`}
-                  className=" no-underline"
-                >
-                  BELI SEKARANG
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+    // Handle jika kursus tidak ditemukan
+    if (!fetchKelas.data.docs || fetchKelas.data.docs.length === 0) {
+      // Anda bisa redirect atau menampilkan halaman 404 di sini
+      // import { notFound } from 'next/navigation';
+      // notFound();
+      console.error(`Course with slug "${slug}" not found.`);
+      // Tampilkan pesan error atau fallback UI
+      return (
+        <main>
+          <Navbar />
+          <section className="flex flex-col items-center justify-center mx-auto mt-10 max-w-5xl px-5 h-[calc(100vh-200px)]">
+            <h1 className="text-2xl font-semibold">Kursus Tidak Ditemukan</h1>
+            <p className="text-muted-foreground mt-2">
+              Kursus yang Anda cari tidak dapat ditemukan.
+            </p>
+          </section>
+          <Footer />
+        </main>
+      );
+    }
 
-        <Tabs
-          defaultValue="description"
-          className="mt-5 prose prose-neutral dark:prose-invert"
-        >
-          <TabsList>
-            <TabsTrigger value="description">Deskripsi</TabsTrigger>
-            <TabsTrigger value="syllabus">Silabus</TabsTrigger>
-          </TabsList>
-          <TabsContent value="description">
-            <div className="max-w-5xl">
-              <RichText className="" data={kelasOne.description} />
-            </div>
-          </TabsContent>
-          <TabsContent value="syllabus">
-            <Accordion type="single" collapsible>
-              {kelasOne.modules &&
-                kelasOne.modules.map((module, index) => (
-                  <AccordionItem value={module.id} key={index}>
-                    <AccordionTrigger className="py-0">
-                      {module.title}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <ul>
-                        {module.contents.map((content, index) => (
-                          <li key={index}>{content.title}</li>
-                        ))}
-                      </ul>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-            </Accordion>
-          </TabsContent>
-        </Tabs>
-      </section>
-      <Footer />
-    </main>
-  );
+    const kelasOne = fetchKelas.data.docs[0];
+
+    return (
+      <main className="bg-background text-foreground">
+        {" "}
+        {/* Background color for consistency */}
+        <Navbar />
+        {/* Padding atas dan bawah untuk section */}
+        <section className="flex flex-col justify-center mx-auto max-w-5xl px-5 py-8 md:py-12">
+          {/* Render Client Component dengan props */}
+          <CourseDetails course={kelasOne} slug={slug} />
+        </section>
+        <Footer />
+      </main>
+    );
+  } catch (error) {
+    console.error(`Failed to fetch course data for slug "${slug}":`, error);
+    // Handle error fetching data
+    return (
+      <main>
+        <Navbar />
+        <section className="flex flex-col items-center justify-center mx-auto mt-10 max-w-5xl px-5 h-[calc(100vh-200px)]">
+          <h1 className="text-2xl font-semibold text-destructive">
+            Gagal Memuat Data
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Terjadi kesalahan saat mengambil data kursus.
+          </p>
+        </section>
+        <Footer />
+      </main>
+    );
+  }
 }

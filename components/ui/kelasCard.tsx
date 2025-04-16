@@ -25,6 +25,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "./pagination";
+import { motion } from "framer-motion";
 
 export function KelasCard() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +36,7 @@ export function KelasCard() {
   const getKelas = useQuery({
     queryKey: ["kelas", page],
     queryFn: async () => {
-      const data = axios.get(`/api/kelas?page=${page}`);
+      const data = await axios.get(`/api/kelas?page=${page}`);
       return data;
     },
   });
@@ -44,12 +45,7 @@ export function KelasCard() {
     if (getKelas.isSuccess) {
       setCourseData(getKelas.data.data.docs);
     }
-  }, [getKelas]);
-
-  useEffect(() => {
-    if (courseData) {
-    }
-  }, [courseData]);
+  }, [getKelas.data, getKelas.isSuccess]);
 
   const createQueryString = useCallback(
     (name: "page", value: string) => {
@@ -57,110 +53,129 @@ export function KelasCard() {
       params.set(name, value);
       return params.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   function changePosition(page: number): string {
     return pathname + "?" + createQueryString("page", `${page}`);
   }
 
+  // Animation variants for card
+  const cardVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.07, duration: 0.5, ease: "easeOut" },
+    }),
+  };
+
   return (
-    <main className="col-span-12 lg:col-span-10">
-      <div className="mt-10 mb-2 z-0 px-2 md:px-0">
-        <p className="text-4xl font-bold text-secondary dark:invert -z-0 text-wrap">
-          MULAI BELAJAR SEKARANG JUGA!
-        </p>
-        <p className="text-lg text-gray-700 font-semibold dark:invert">
-          Nikmati beragam kelas sesuai kebutuhan kamu
-        </p>
-      </div>
-      <div className="grid grid-cols-1 justify-self-center lg:grid-cols-2 xl:grid-cols-none xl:flex xl:justify-between xl:justify-self-start xl:flex-wrap gap-3">
+    <main className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
         {courseData &&
-          courseData?.map((arr, key) => (
-            <Card className="w-[300px]" key={key}>
-              <CardHeader>
-                <div>
-                  <Badge
-                    variant={"secondary"}
-                    className={`text-white dark:text-gray-200 ${!arr.category_name && "hidden"}`}
-                  >
-                    {arr.category_name}
-                  </Badge>
-                  <Badge
-                    variant={"outline"}
-                    className={`text-secondary border-secondary dark:border-white ml-2 dark:text-gray-200 ${!arr.level && "hidden"}`}
-                  >
-                    {arr.level}
-                  </Badge>
-                </div>
-                <CardTitle className=" line-clamp-4 h-24 text-secondary dark:text-gray-200">
-                  {arr?.name}
-                </CardTitle>
-                <div className="prose dark:text-white flex text-xl items-center gap-1">
-                  <BookText
-                    className="text-secondary dark:text-white"
-                    height={14}
-                    width={14}
-                  />
-                  <p className="p-0 m-0 text-sm text-secondary dark:text-gray-200">
-                    {arr.modules.length} modul
-                  </p>
-                </div>
-                <CardDescription className="h-[5rem] text-ellipsis line-clamp-4">
-                  {arr.short_description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="prose dark:text-white flex text-xl items-center gap-1">
-                  <p className="p-0 m-0 text-secondary text-sm font-semibold dark:text-gray-200">
+          courseData.map((arr, key) => (
+            <motion.div
+              key={key}
+              custom={key}
+              initial="hidden"
+              animate="visible"
+              variants={cardVariants}
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0 8px 32px 0 rgba(80,80,180,0.10)",
+              }}
+              className="w-full max-w-xs"
+            >
+              <Card className="w-full h-full bg-white/90 dark:bg-zinc-900/90 shadow-xl rounded-2xl border-0 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <CardHeader>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {arr.category_name && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-gradient-to-r from-indigo-400 to-blue-400 text-white text-xs px-2 py-1"
+                      >
+                        {arr.category_name}
+                      </Badge>
+                    )}
+                    {arr.level && (
+                      <Badge
+                        variant="outline"
+                        className="border-indigo-400 text-indigo-600 dark:border-white dark:text-white text-xs px-2 py-1"
+                      >
+                        {arr.level}
+                      </Badge>
+                    )}
+                  </div>
+                  <CardTitle className="line-clamp-3 h-20 text-lg font-bold text-gray-800 dark:text-white">
+                    {arr?.name}
+                  </CardTitle>
+                  <div className="flex items-center gap-2 mt-1 mb-2">
+                    <BookText
+                      className="text-indigo-500"
+                      height={16}
+                      width={16}
+                    />
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      {arr.modules.length} modul
+                    </span>
+                  </div>
+                  <CardDescription className=" text-ellipsis line-clamp-4 text-gray-600 dark:text-gray-400">
+                    {arr.short_description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
                     {arr.price > 0 ? (
-                      toIDRFormat(arr.price)
+                      <span className="text-indigo-600 dark:text-indigo-300 font-semibold text-base">
+                        {toIDRFormat(arr.price)}
+                      </span>
                     ) : (
                       <Badge
-                        variant={"outline"}
-                        className="text-secondary border-secondary dark:text-gray-200 dark:border-200"
+                        variant="outline"
+                        className="border-green-400 text-green-600 dark:text-green-300 dark:border-green-300"
                       >
                         {arr.status === "COMING_SOON"
                           ? "Coming soon"
                           : "Gratis"}
                       </Badge>
                     )}
-                  </p>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button
-                  asChild
-                  size={"sm"}
-                  disabled={arr.status === "COMING_SOON"}
-                  variant={"secondary"}
-                  className="min-w-20 text-white dark:text-gray-200 disabled:bg-gray-300"
-                >
-                  {arr.status === "COMING_SOON" ? (
-                    <p>Beli</p>
-                  ) : arr.mine ? (
-                    <Link href={`/dashboard/kelas/${arr.slug}`}>
-                      Akses kelas
-                    </Link>
-                  ) : (
-                    <Link href={`/kelas/${arr.slug}/checkout`}>Beli</Link>
-                  )}
-                </Button>
-                <Button
-                  size={"sm"}
-                  variant={"outline"}
-                  disabled={arr.status === "COMING_SOON"}
-                  className="w-20 border-secondary dark:border-gray-200"
-                >
-                  <Link
-                    href={`/kelas/${arr.slug}`}
-                    className="text-secondary dark:text-gray-200"
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between gap-2 mt-2">
+                  <Button
+                    asChild
+                    size="sm"
+                    disabled={arr.status === "COMING_SOON"}
+                    variant="secondary"
+                    className="min-w-20 text-white rounded-lg font-semibold shadow transition-all duration-200 hover:scale-105"
                   >
-                    Detail
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
+                    {arr.status === "COMING_SOON" ? (
+                      <span>Beli</span>
+                    ) : arr.mine ? (
+                      <Link href={`/dashboard/kelas/${arr.slug}`}>
+                        Akses kelas
+                      </Link>
+                    ) : (
+                      <Link href={`/kelas/${arr.slug}/checkout`}>Beli</Link>
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={arr.status === "COMING_SOON"}
+                    className="w-20 border-indigo-400 dark:border-gray-200 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
+                  >
+                    <Link
+                      href={`/kelas/${arr.slug}`}
+                      className="text-indigo-600 dark:text-gray-200"
+                    >
+                      Detail
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </motion.div>
           ))}
       </div>
       {getKelas.isSuccess && getKelas.data.data.totalPages > 1 && (
@@ -170,18 +185,18 @@ export function KelasCard() {
               <PaginationPrevious
                 className={cn({
                   "pointer-events-none opacity-50":
-                    getKelas.data.data.hasNextPage,
+                    !getKelas.data.data.hasPrevPage,
                 })}
                 href={changePosition(getKelas.data.data.prevPage)}
               />
             </PaginationItem>
             {Array.from(
               { length: getKelas.data.data.totalPages },
-              (_, i) => i + 1
+              (_, i) => i + 1,
             ).map((arr, index) => (
               <PaginationItem
                 className={cn({
-                  "bg-gray-200 dark:bg-gray-700 pointer-events-none rounded-sm":
+                  "bg-indigo-100 dark:bg-indigo-800 pointer-events-none rounded-sm":
                     getKelas.data.data.page === arr,
                 })}
                 key={index}
@@ -195,7 +210,7 @@ export function KelasCard() {
               <PaginationNext
                 className={cn({
                   "pointer-events-none opacity-50":
-                    getKelas.data.data.hasPrevPage,
+                    !getKelas.data.data.hasNextPage,
                 })}
                 href={changePosition(getKelas.data.data.nextPage)}
               />

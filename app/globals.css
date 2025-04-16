@@ -81,4 +81,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  .navbar {
+    @apply w-[100%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl mx-auto;
+  }
 }

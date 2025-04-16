@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,34 +18,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { customAlphabet } from "nanoid";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Percent, Loader2 } from "lucide-react";
 
 const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const nanoid = customAlphabet(alphabet, 13);
 
-const Spinner = () => {
-  return (
-    <svg
-      className="animate-spin m-0 h-5 w-5 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
-    </svg>
-  );
-};
+const Spinner = () => <Loader2 className="animate-spin h-5 w-5" />;
 
 interface DataReturnType {
   name: string;
@@ -58,10 +36,10 @@ interface CouponInput {
   coupon: string;
 }
 
-export default function Page() {
-  const [data, setData] = useState<DataReturnType>();
-  const [discount, setDiscount] = useState<number>();
-  const { register, handleSubmit } = useForm<CouponInput>();
+export default function CheckoutPage() {
+  const [data, setData] = useState<DataReturnType | undefined>(undefined);
+  const [discount, setDiscount] = useState<number | undefined>(undefined);
+  const { register, handleSubmit, reset } = useForm<CouponInput>();
 
   const extractKelasSlug = (path: string): string | null => {
     const regex = /\/kelas\/([^/]+)/;
@@ -71,25 +49,24 @@ export default function Page() {
 
   const pathname = usePathname();
   const router = useRouter();
-
   const slug = extractKelasSlug(pathname);
 
   const getKelas = useQuery({
-    queryKey: ["kelass"],
+    queryKey: ["kelas", slug],
     queryFn: async () => {
-      const data = await axios.get(`/api/kelas/${slug}`);
-      return data;
+      const response = await axios.get(`/api/kelas/${slug}`);
+      return response.data;
     },
   });
 
-  const check_coupon = useMutation({
+  const checkCoupon = useMutation({
     mutationFn: async ({ coupon_code }: { coupon_code: string }) => {
-      const data = await axios.get(`/api/coupon/${coupon_code}`);
-      return data;
+      const response = await axios.get(`/api/coupon/${coupon_code}`);
+      return response.data;
     },
   });
 
-  const create_order = useMutation({
+  const createOrder = useMutation({
     mutationFn: ({
       course_item,
       order_number,
@@ -99,16 +76,6 @@ export default function Page() {
       order_number: string;
       coupon_code: string;
     }) => {
-      const formData = new FormData();
-      formData.append(
-        "_payload",
-        JSON.stringify({
-          course_item,
-          order_number,
-          coupon_code,
-        })
-      );
-
       return axios.post("/api/order", {
         course_item,
         order_number,
@@ -118,155 +85,241 @@ export default function Page() {
   });
 
   useEffect(() => {
-    if (getKelas.isSuccess && getKelas.data?.status === 200) {
-      const res = getKelas.data.data.docs[0];
+    if (getKelas.isSuccess && getKelas.data?.docs) {
+      const res = getKelas.data.docs[0];
       setData({
         name: res.name,
         price: res.price,
         id: res.id,
       });
     }
-  }, [getKelas.data?.data.docs, getKelas.data?.status, getKelas.isSuccess]);
+  }, [getKelas.data, getKelas.isSuccess]);
 
   useEffect(() => {
-    if (create_order.isSuccess) {
-      router.push(create_order.data.data.doc.payment_redirect_url);
+    if (
+      createOrder.isSuccess &&
+      createOrder.data?.data?.doc?.payment_redirect_url
+    ) {
+      router.push(createOrder.data.data.doc.payment_redirect_url);
     }
-  }, [
-    create_order?.data?.data?.doc.payment_redirect_url,
-    create_order.isSuccess,
-    router,
-  ]);
+  }, [createOrder.data, createOrder.isSuccess, router]);
 
-  const onSubmitCoupon: SubmitHandler<CouponInput> = (data) =>
-    check_coupon.mutate({
-      coupon_code: data.coupon,
-    });
+  useEffect(() => {
+    if (checkCoupon.isSuccess && checkCoupon.data?.docs?.length > 0) {
+      const discountValue = getDiscountValue({
+        doc: checkCoupon.data.docs[0],
+        price: data?.price,
+      });
+      setDiscount(discountValue);
+    }
+  }, [checkCoupon.data, checkCoupon.isSuccess, data?.price]);
+
+  const onSubmitCoupon: SubmitHandler<CouponInput> = (formData) =>
+    checkCoupon.mutate({ coupon_code: formData.coupon });
 
   function getDiscountValue({
     doc,
     price,
   }: {
-    doc: any | undefined;
+    doc: any;
     price: number | undefined;
-  }) {
+  }): number {
+    if (!price) return 0;
     switch (doc?.discount_type) {
       case "percentage":
-        const percentage = doc?.discount_value / 100;
-        return price && price * percentage;
+        return price * (doc.discount_value / 100);
       case "fixed":
-        return price && price - doc?.discount_value;
+        return doc.discount_value;
+      default:
+        return 0;
     }
   }
 
-  useEffect(() => {
-    if (check_coupon.isSuccess) {
-      const discount = getDiscountValue({
-        doc: check_coupon.data.data.docs[0],
-        price: data?.price,
-      });
-      setDiscount(discount);
-    }
-  }, [check_coupon?.data?.data.docs, check_coupon.isSuccess, data?.price]);
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 32 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.7, ease: "easeOut" },
+    },
+  };
 
   return (
-    <div className="max-h-screen h-screen bg-gray-100 flex justify-center items-center flex-col">
-      <Card className="w-[300px] prose prose-neutral dark:bg-gray-900">
-        <CardHeader>
-          <CardTitle className="text-3xl text-secondary dark:text-gray-200">
-            Checkout
-          </CardTitle>
-          <CardDescription>
-            Selesaikan pembayaran untuk mengakses kursus dari Nubi Academy
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="dark:text-gray-200 text-secondary">
-          <div>
-            <p className="font-semibold mt-0 mb-0">Nama kelas</p>
-            <p className="prose-sm mt-0 mb-0">{data?.name}</p>
-          </div>
-          <div>
-            <p className="font-semibold mt-0 mb-0">Rincian kelas</p>
-            <span className="flex justify-between items-baseline mt-0 mb-0">
-              <p className="mt-0 mb-0 text-sm font-medium">ID kelas</p>
-              <p className="mt-0 mb-0 text-xs text-gray-600">{data?.id}</p>
-            </span>
-          </div>
-          <div>
-            <p className="font-semibold mt-0 mb-0">Kode Promo</p>
-            <span className="flex w-full max-w-sm items-center space-x-2">
-              {check_coupon.isSuccess &&
-              check_coupon.data.data.totalDocs > 0 ? (
-                <>
-                  <Badge variant={"secondary"} className="text-white">
-                    {check_coupon.data.data.docs[0].code}
-                  </Badge>
-                </>
-              ) : (
-                <>
-                  <Input
-                    className="h-10 focus-visible:ring-0"
-                    type="text"
-                    id="coupon"
-                    {...register("coupon")}
-                    placeholder="Kode Promo"
-                    disabled={check_coupon.isLoading}
-                  />
-                  <Button
-                    disabled={check_coupon.isLoading}
-                    onClick={handleSubmit(onSubmitCoupon)}
-                    variant={"secondary"}
-                    className="text-white"
-                  >
-                    {check_coupon.isLoading ? <Spinner /> : "Terapkan"}
-                  </Button>
-                </>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 flex items-center justify-center p-4 sm:p-6">
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md sm:max-w-lg"
+      >
+        <Card className="bg-white/90 dark:bg-zinc-900/90 shadow-2xl rounded-2xl overflow-hidden border-0">
+          {/* Gradient Header */}
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-2" />
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-2xl sm:text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight flex items-center gap-2">
+              <CheckCircle2 className="text-indigo-500 h-7 w-7" />
+              Checkout
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
+              Selesaikan pembayaran untuk mengakses kursus dari Nubi Academy
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 text-gray-800 dark:text-gray-200">
+            {/* Course Info */}
+            <motion.div
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="space-y-2 sm:space-y-3"
+            >
+              <h3 className="text-base sm:text-lg font-semibold">Nama Kelas</h3>
+              <p className="text-sm sm:text-base font-medium">
+                {data?.name || (
+                  <span className="animate-pulse text-gray-400">Memuat...</span>
+                )}
+              </p>
+              <div className="flex justify-between text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                <span>ID Kelas</span>
+                <span>{data?.id || "N/A"}</span>
+              </div>
+            </motion.div>
+
+            {/* Coupon Section */}
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="space-y-2 sm:space-y-3"
+            >
+              <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                <Percent className="h-5 w-5 text-indigo-500" />
+                Kode Promo
+              </h3>
+              <div className="flex gap-2 sm:gap-3">
+                <AnimatePresence mode="wait">
+                  {checkCoupon.isSuccess &&
+                  checkCoupon.data?.docs?.length > 0 ? (
+                    <motion.div
+                      key="badge"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      className="flex items-center gap-2"
+                    >
+                      <Badge
+                        variant="secondary"
+                        className="bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 text-indigo-800 dark:text-indigo-200 text-sm sm:text-base py-1 sm:py-1.5 px-2 sm:px-3 shadow"
+                      >
+                        <CheckCircle2 className="inline mr-1 h-4 w-4 text-green-500" />
+                        {checkCoupon.data.docs[0].code}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-500 hover:text-red-500"
+                        onClick={() => {
+                          checkCoupon.reset();
+                          setDiscount(undefined);
+                          reset();
+                        }}
+                        aria-label="Hapus kode promo"
+                        type="button"
+                      >
+                        ×
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <motion.form
+                      key="form"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      className="flex gap-2 sm:gap-3 w-full"
+                      onSubmit={handleSubmit(onSubmitCoupon)}
+                    >
+                      <Input
+                        id="coupon"
+                        placeholder="Masukkan Kode Promo"
+                        className="h-10 sm:h-11 text-sm sm:text-base rounded-lg border-gray-200 dark:border-gray-700 focus-visible:ring-indigo-500 dark:bg-gray-800"
+                        disabled={checkCoupon.isPending}
+                        {...register("coupon")}
+                        autoComplete="off"
+                      />
+                      <Button
+                        type="submit"
+                        disabled={checkCoupon.isPending}
+                        className="h-10 sm:h-11 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-700 text-white px-3 sm:px-4 text-sm sm:text-base rounded-lg transition-all duration-200 shadow"
+                      >
+                        {checkCoupon.isPending ? <Spinner /> : "Terapkan"}
+                      </Button>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
+              </div>
+              {checkCoupon.isError && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-xs text-red-500 mt-1"
+                >
+                  Kode promo tidak valid atau sudah tidak berlaku.
+                </motion.p>
               )}
-            </span>
-          </div>
-          <div>
-            <p className=" prose-sm font-semibold mt-0 mb-0">
-              Rincian pembayaran
-            </p>
-            <span className="flex justify-between mt-0 mb-0">
-              <p className="mt-0 mb-0">Harga</p>
-              <p className="mt-0 mb-0">{toIDRFormat(data?.price)}</p>
-            </span>
-            <span className="flex justify-between mt-0 mb-0">
-              <p className="mt-0 mb-0">Diskon</p>
-              <p className="mt-0 mb-0">
-                {toIDRFormat(discount ? discount : 0)}
-              </p>
-            </span>
-            <span className="flex justify-between mt-0 mb-0 font-bold">
-              <p className="mt-0 mb-0">Total</p>
-              <p className="mt-0 mb-0">
-                {discount
-                  ? toIDRFormat((data?.price as number) - discount)
-                  : toIDRFormat(data?.price)}
-              </p>
-            </span>
-          </div>
-        </CardContent>
-        <CardFooter
-          className="flex justify-end"
-          onClick={() =>
-            create_order.mutate({
-              course_item: `${data?.id}`,
-              order_number: `NUBI-${nanoid()}`,
-              coupon_code: check_coupon.data?.data.docs[0].id || "",
-            })
-          }
-        >
-          <Button
-            variant={"secondary"}
-            className="text-white"
-            disabled={create_order.isLoading}
-          >
-            {create_order.isLoading ? <Spinner /> : "Pesan sekarang"}
-          </Button>
-        </CardFooter>
-      </Card>
+            </motion.div>
+
+            {/* Payment Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="space-y-2 sm:space-y-3"
+            >
+              <h3 className="text-base sm:text-lg font-semibold">
+                Rincian Pembayaran
+              </h3>
+              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
+                <div className="flex justify-between">
+                  <span>Harga</span>
+                  <span>
+                    {data?.price ? toIDRFormat(data.price) : "Memuat..."}
+                  </span>
+                </div>
+                <div className="flex justify-between text-indigo-600 dark:text-indigo-400 font-medium">
+                  <span>Diskon</span>
+                  <span>{toIDRFormat(discount || 0)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-base sm:text-lg pt-1 sm:pt-2 border-t border-gray-100 dark:border-gray-800">
+                  <span>Total</span>
+                  <span>
+                    {data?.price
+                      ? toIDRFormat(
+                          discount ? data.price - discount : data.price,
+                        )
+                      : "Memuat..."}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </CardContent>
+          <CardFooter className="flex justify-end pt-4 sm:pt-6 border-t border-gray-100 dark:border-gray-800">
+            <Button
+              onClick={() =>
+                data?.id &&
+                createOrder.mutate({
+                  course_item: data.id,
+                  order_number: `NUBI-${nanoid()}`,
+                  coupon_code: checkCoupon.data?.docs?.[0]?.id || "",
+                })
+              }
+              disabled={createOrder.isPending || !data}
+              className="h-10 sm:h-11 w-full sm:w-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-purple-700 text-white px-4 sm:px-6 text-sm sm:text-base rounded-lg shadow-lg transition-all duration-300 hover:scale-105 font-semibold"
+            >
+              {createOrder.isPending ? <Spinner /> : "Pesan Sekarang"}
+            </Button>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 }

@@ -4,17 +4,18 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useLessonPositionStore } from "@/components/layout/providers/lesson-position-provider";
 import { useEffect } from "react";
 import Plyr from "plyr-react";
 import "plyr-react/plyr.css";
 import { useSidebar } from "@/components/ui/sidebar";
-import { ListCollapse } from "lucide-react";
+import { ListCollapse, BookText, FileText, AlertTriangle } from "lucide-react";
+import { LoaderSpinner } from "@/components/ui/loader-spinner";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CourseDetailLesson() {
   const { setPrevious, setNext, setCurrent } = useLessonPositionStore(
-    (state) => state
+    (state) => state,
   );
   const { state, toggleSidebar } = useSidebar();
 
@@ -45,69 +46,116 @@ export default function CourseDetailLesson() {
     setPrevious,
   ]);
 
-  const handleCopy = (event) => {
+  const handleCopy = (event: React.ClipboardEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  return (
-    <div onCopy={handleCopy} className="w-[100%] h-[90%] rounded-none">
-      <div
-        className={`fixed cursor-pointer ${state === "collapsed" ? "hidden md:flex" : "hidden"}`}
-        onClick={() => toggleSidebar()}
-      >
-        <ListCollapse />
-      </div>
-      {lesson.isSuccess && lesson?.data?.data.videoUrl && (
-        <div className="mx-auto mt-0 md:mt-5 w-[70%]">
-          <Plyr
-            options={{
-              controls: [
-                "play-large",
-                "play",
-                "progress",
-                "current-time",
-                "mute",
-                "volume",
-                "captions",
-                "settings",
-                "pip",
-                "airplay",
-                "fullscreen",
-              ],
-            }}
-            source={{
-              type: "video",
-              sources: [
-                {
-                  src: getYouTubeVideoId(lesson?.data?.data.videoUrl),
-                  provider: "youtube",
-                },
-              ],
-            }}
-          />
-        </div>
-      )}
-      {lesson.isSuccess && !lesson.data?.data.videoUrl && (
-        <RichText
-          className="prose prose-sm mb-5 md:mt-0 break-words text-lg prose-h4:text-2xl prose-li:first:text-lg prose-h4:text-black prose-code:text-gray-600 dark:prose-invert dark:prose-p:text-gray-200 dark:prose-li:text-gray-200 dark:prose-strong:text-gray-200 dark:prose-h4:text-gray-200 mx-auto text-left pb-20"
-          data={lesson?.data?.data.content}
-        />
-      )}
+  // Helper
+  function getYouTubeVideoId(url: string) {
+    const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
-      {lesson.isLoading && (
-        <div className="w-[80%] mx-auto">
-          <Skeleton className="h-16" />
-          <Skeleton className="h-6 w-[50%] mt-4" />
-          <Skeleton className=" h-96 mt-5" />
-        </div>
-      )}
-      {lesson.isError && <div>Terdapat kesalahan</div>}
+  // Loading
+  if (lesson.isLoading) {
+    return <LoaderSpinner />;
+  }
+
+  // Error
+  if (lesson.isError) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-16"
+      >
+        <AlertTriangle className="w-16 h-16 text-yellow-400 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Terjadi kesalahan</h2>
+        <p className="text-gray-500 dark:text-gray-300">
+          Materi tidak dapat dimuat. Silakan coba beberapa saat lagi.
+        </p>
+      </motion.div>
+    );
+  }
+
+  // Not found
+  if (lesson.isSuccess && !lesson.data?.data) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center justify-center py-16"
+      >
+        <FileText className="w-16 h-16 text-indigo-200 dark:text-indigo-700 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Materi tidak ditemukan</h2>
+        <p className="text-gray-500 dark:text-gray-300">
+          Materi dengan ID tersebut tidak tersedia.
+        </p>
+      </motion.div>
+    );
+  }
+
+  // Main content
+  const lessonData = lesson.data?.data;
+  const info = lessonData?.lesson_info?.current;
+
+  return (
+    <div onCopy={handleCopy} className="w-full mx-auto px-2 md:px-0 pb-20">
+      {/* Video atau Konten */}
+      <AnimatePresence mode="wait">
+        {lesson.isSuccess && lessonData?.videoUrl ? (
+          <motion.div
+            key="video"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="mx-auto mb-8 w-full max-w-2xl rounded-xl overflow-hidden shadow-lg bg-black"
+          >
+            <Plyr
+              options={{
+                controls: [
+                  "play-large",
+                  "play",
+                  "progress",
+                  "current-time",
+                  "mute",
+                  "volume",
+                  "captions",
+                  "settings",
+                  "pip",
+                  "airplay",
+                  "fullscreen",
+                ],
+              }}
+              source={{
+                type: "video",
+                sources: [
+                  {
+                    src: getYouTubeVideoId(lessonData?.videoUrl),
+                    provider: "youtube",
+                  },
+                ],
+              }}
+            />
+          </motion.div>
+        ) : lesson.isSuccess && lessonData?.content ? (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="mx-auto mb-8 w-full max-w-2xl"
+          >
+            <RichText
+              className="prose prose-lg md:prose-xl dark:prose-invert break-words text-left pb-20"
+              data={lessonData?.content}
+            />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
-}
-
-function getYouTubeVideoId(url: string) {
-  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
 }

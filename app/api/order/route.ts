@@ -40,7 +40,11 @@ export async function POST(request: Request) {
   formData.append(
     "_payload",
     JSON.stringify({
-      course_item,
+      item_to_purchase: {
+        relationTo: "course",
+        value: course_item,
+      },
+      item_to_purchase_type: "course",
       order_number,
       coupon_code,
     })
