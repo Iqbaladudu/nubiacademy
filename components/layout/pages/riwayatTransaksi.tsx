@@ -10,18 +10,16 @@ import {
 } from "@/components/ui/table";
 import { toIDRFormat } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { LoaderSpinner } from "@/components/ui/loader-spinner";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { ReceiptText } from "lucide-react";
+import {getOrderAction} from "@/action/get-order.action"
 
 export default function RiwayatTransaksi() {
   const my_order = useQuery({
     queryKey: ["my-order"],
-    queryFn: async () => {
-      return axios.get("/api/order");
-    },
+    queryFn: async () => await getOrderAction(),
   });
 
   return (
@@ -50,8 +48,8 @@ export default function RiwayatTransaksi() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {my_order.isSuccess && my_order.data.data.docs.length > 0 ? (
-                my_order.data.data.docs.map((arr) => (
+              {my_order.isSuccess && my_order.data.docs && my_order.data.docs.length > 0 ? (
+                my_order.data.docs.map((arr: any) => (
                   <motion.tr
                     key={arr.id}
                     initial={{ opacity: 0, y: 16 }}

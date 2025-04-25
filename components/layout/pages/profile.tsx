@@ -2,19 +2,8 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import { z } from "zod";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,12 +24,10 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
-import { User, Loader2 } from "lucide-react";
-
-enum AKUN_SAYA_POSITION {
-  PROFIL = "profil",
-  KEAMANAN = "keamanan",
-}
+import { User, Loader2, BadgeCheck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getProfile } from "@/action/get-profile.action";
+import { updateProfile } from "@/action/update-profile.action";
 
 enum TYPE_FORM {
   FULLNAME = "fullname",
@@ -63,116 +50,167 @@ const editProfileFormSchema = z.object({
 });
 
 export default function Profile() {
-  const searchParams = useSearchParams();
-  const profile: AKUN_SAYA_POSITION = searchParams.get(
-    "position",
-  ) as AKUN_SAYA_POSITION;
+  const [user, setUser] = React.useState<any>(null);
+  const [profile_loading, setProfileLoading] = React.useState(true);
+  const [profile_success, setProfileSuccess] = React.useState(false);
+  const [profile_error, setProfileError] = React.useState<string | null>(null);
 
-  const {
-    data: user,
-    isLoading: profile_loading,
-    isSuccess: profile_success,
-    refetch,
-  } = useQuery({
-    queryKey: ["my-profile"],
-    queryFn: async () => {
-      return await axios.get("/api/me/profile");
-    },
-    enabled: profile === AKUN_SAYA_POSITION.PROFIL,
-  });
+  React.useEffect(() => {
+    let mounted = true;
+    setProfileLoading(true);
+    getProfile()
+      .then((data) => {
+        if (mounted) {
+          setUser({ data });
+          setProfileSuccess(true);
+          setProfileError(null);
+        }
+      })
+      .catch((err) => {
+        setProfileError(err.message || "Gagal mengambil profil");
+        setProfileSuccess(false);
+      })
+      .finally(() => {
+        if (mounted) setProfileLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function getInitials(name?: string) {
+    if (!name) return "";
+    const parts = name.split(" ");
+    if (parts.length === 1) return parts[0][0];
+    return parts[0][0] + parts[parts.length - 1][0];
+  }
+
+  function SubscriptionBadge({ status }: { status?: string }) {
+    if (!status) return null;
+    let color = "bg-gray-200 text-gray-700";
+    let label = status;
+    if (status === "ACTIVE" || status === "PAID") {
+      color = "bg-green-100 text-green-700";
+      label = "Aktif";
+    } else if (status === "INACTIVE" || status === "EXPIRED") {
+      color = "bg-red-100 text-red-700";
+      label = "Tidak Aktif";
+    } else if (status === "TRIAL") {
+      color = "bg-yellow-100 text-yellow-700";
+      label = "Trial";
+    }
+    return (
+      <Badge className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${color}`}>
+        <BadgeCheck className="inline w-4 h-4 mr-1" /> {label}
+      </Badge>
+    );
+  }
 
   return (
-    <motion.div
+    <motion.section
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="flex justify-center items-start lg:items-center min-h-[70vh] py-8"
+      className="w-full min-h-[70vh] flex flex-col items-center justify-center px-4 py-10 bg-transparent"
     >
-      <Card className="w-full max-w-lg border-0 md:border shadow-xl rounded-2xl bg-white/90 dark:bg-zinc-900/90">
-        <CardHeader className="flex flex-col items-center gap-2">
-          <div className="bg-indigo-100 dark:bg-indigo-900 rounded-full p-3 mb-2">
-            <User className="w-10 h-10 text-indigo-500 dark:text-indigo-300" />
+      <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-6">
+        {/* Avatar & Nama */}
+        <div className="flex flex-col items-center gap-2 w-full">
+          <div className="relative flex items-center justify-center bg-indigo-100 dark:bg-indigo-900 rounded-full w-24 h-24 mb-2 shadow">
+            {user?.data?.fullname ? (
+              <span className="text-4xl font-bold text-indigo-600 dark:text-indigo-300">
+                {getInitials(user.data.fullname)}
+              </span>
+            ) : (
+              <User className="w-12 h-12 text-indigo-500 dark:text-indigo-300" />
+            )}
           </div>
-          <CardTitle className="text-2xl font-bold text-center">
-            Profil Saya
-          </CardTitle>
-          <CardDescription className="text-center">
-            Pastikan kamu mengisi data dengan benar
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <div className="grid w-full items-center gap-5">
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Nama"}
-                value={user?.data.fullname}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Username"}
-                value={user?.data.username}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Email"}
-                value={user?.data.email}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Whatsapp"}
-                value={user?.data.phone}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Provinsi"}
-                value={user?.data.province}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Kota"}
-                value={user?.data.regency}
-              />
-              <ProfileItem
-                isLoading={profile_loading}
-                label={"Status langganan"}
-                value={user?.data.subscription_status}
-              />
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          {profile_success && (
-            <EditProfileDialog user={user?.data} refetch={refetch} />
+          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
+            {user?.data?.fullname || (profile_loading ? <Skeleton className="w-32 h-7 rounded" /> : "Profil Saya")}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-300 text-center text-base">
+            Pastikan data profil kamu selalu up-to-date
+          </p>
+          {profile_error && (
+            <span className="text-red-500 text-sm">{profile_error}</span>
           )}
-          {profile_loading && <Skeleton className="w-28 h-10 rounded-lg" />}
-        </CardFooter>
-      </Card>
-    </motion.div>
+          <div className="mt-2">
+            {profile_success && (
+              <EditProfileDialog
+                user={user?.data}
+                onSuccess={(newUser) => setUser({ data: newUser })}
+              />
+            )}
+            {profile_loading && <Skeleton className="w-28 h-10 rounded-lg" />}
+          </div>
+        </div>
+        {/* Info utama */}
+        <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500 dark:text-gray-400">Username</span>
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{user?.data?.username || <Skeleton className="w-24 h-5 rounded" />}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500 dark:text-gray-400">Status Langganan</span>
+            <span className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
+              {user?.data?.subscription_status || <Skeleton className="w-20 h-5 rounded" />}
+              <SubscriptionBadge status={user?.data?.subscription_status} />
+            </span>
+          </div>
+        </div>
+        {/* Divider */}
+        <div className="w-full border-b border-border/30 my-2" />
+        {/* Detail Profil */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+          <ProfileItem
+            isLoading={profile_loading}
+            label="Email"
+            value={user?.data?.email}
+          />
+          <ProfileItem
+            isLoading={profile_loading}
+            label="Whatsapp"
+            value={user?.data?.phone}
+          />
+          <ProfileItem
+            isLoading={profile_loading}
+            label="Provinsi"
+            value={user?.data?.province}
+          />
+          <ProfileItem
+            isLoading={profile_loading}
+            label="Kota"
+          />
+        </div>
+      </div>
+    </motion.section>
   );
 
   function ProfileItem({
     label,
     value,
     isLoading,
+    icon,
   }: {
     label?: string;
-    value?: string;
+    value?: React.ReactNode;
     isLoading: boolean;
+    icon?: React.ReactNode;
   }) {
     return (
-      <div className="flex flex-col md:flex-row items-baseline justify-between gap-1">
+      <div className="flex flex-row items-center justify-between gap-2 py-1">
         <Label
-          className="text-indigo-700 dark:text-indigo-300 text-md font-semibold"
+          className="text-indigo-700 dark:text-indigo-300 text-md font-semibold flex items-center"
           htmlFor={label}
         >
+          {icon}
           {label}
         </Label>
         <div>
           {!isLoading ? (
-            <p className="text-gray-700 dark:text-gray-300 font-medium">
+            <span className="text-gray-700 dark:text-gray-300 font-medium break-words">
               {value ? value : "-"}
-            </p>
+            </span>
           ) : (
             <Skeleton className="w-36 h-5 rounded" />
           )}
@@ -182,19 +220,17 @@ export default function Profile() {
   }
 }
 
-function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
+function EditProfileDialog({
+  user,
+  onSuccess,
+}: {
+  user?: any;
+  onSuccess: (newUser: any) => void;
+}) {
   const [open, setOpen] = React.useState(false);
-  const update = useMutation({
-    mutationFn: async ({
-      data,
-    }: {
-      data: z.infer<typeof editProfileFormSchema>;
-    }) => {
-      return await axios.patch("/api/me/profile", {
-        ...data,
-      });
-    },
-  });
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
   const form = useForm<z.infer<typeof editProfileFormSchema>>({
     resolver: zodResolver(editProfileFormSchema),
     defaultValues: {
@@ -206,16 +242,23 @@ function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof editProfileFormSchema>) {
-    update.mutate({ data: values });
+  async function onSubmit(values: z.infer<typeof editProfileFormSchema>) {
+    setLoading(true);
+    setError(null);
+    try {
+      const updated = await updateProfile(values);
+      onSuccess(updated);
+      setOpen(false);
+    } catch (err: any) {
+      setError(err.message || "Gagal update profil");
+    } finally {
+      setLoading(false);
+    }
   }
 
   React.useEffect(() => {
-    if (update.isSuccess) {
-      setOpen(false);
-      refetch();
-    }
-  }, [refetch, update.isSuccess]);
+    if (!open) setError(null);
+  }, [open]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -231,7 +274,7 @@ function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
             Pastikan kamu mengisi data dengan benar
           </SheetDescription>
         </SheetHeader>
-        <div className="flex items-center">
+        <div className="flex items-center w-full">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -262,12 +305,15 @@ function EditProfileDialog({ user, refetch }: { user?: any; refetch: any }) {
                 label="Kota"
                 form={form}
               />
+              {error && (
+                <span className="text-red-500 text-sm">{error}</span>
+              )}
               <Button
-                disabled={update.isLoading}
+                disabled={loading}
                 type="submit"
                 className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold rounded-lg mt-2"
               >
-                {update.isLoading && (
+                {loading && (
                   <Loader2 className="animate-spin mr-2 h-5 w-5" />
                 )}
                 Simpan
@@ -285,7 +331,7 @@ function ProfileItemFormEdit({
   name,
   label,
 }: {
-  form: UseFormReturn<z.infer<typeof editProfileFormSchema>, any, undefined>;
+  form: UseFormReturn<{ fullname?: string; username?: string; phone?: string; province?: string; regency?: string; }, any, { fullname?: string; username?: string; phone?: string; province?: string; regency?: string; }>;
   name: TYPE_FORM;
   label: string;
 }) {

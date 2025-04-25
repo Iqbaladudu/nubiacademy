@@ -5,12 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
-import { local } from "@/services/global";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { forgotPasswordAction } from "@/action/forgot-password.action";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -20,37 +18,28 @@ type Inputs = {
 
 export function ForgotPasswordForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
+  const { register, handleSubmit, reset } = useForm<Inputs>();
 
-  const forgot_password = useMutation({
-    mutationFn: (data: Inputs) => {
-      setIsLoading(true);
-      return local.post("/forgot-password", {
-        email: data.email,
-      });
-    },
-    onSettled: () => setIsLoading(false),
-  });
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("email", data.email);
 
-  const { register, handleSubmit } = useForm<Inputs>();
+    const result = await forgotPasswordAction(formData);
+    setIsLoading(false);
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
-    forgot_password.mutate(data);
-
-  useEffect(() => {
-    if (forgot_password.isSuccess) {
+    if (result?.success) {
       toast.success(
         "Email berhasil terkirim, silahkan periksa kotak masuk kamu.",
         { duration: 2000 }
       );
-      return;
-    } else if (forgot_password?.isError) {
-      toast.warning("Gagal, terdapat kesalahan.", {
+      reset();
+    } else {
+      toast.warning(result?.message || "Gagal, terdapat kesalahan.", {
         duration: 2000,
       });
-      return;
     }
-  }, [router, forgot_password.isSuccess, forgot_password?.isError]);
+  };
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
