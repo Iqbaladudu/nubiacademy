@@ -315,8 +315,6 @@ const Course: CollectionConfig = {
             },
           })
 
-          console.log('courses', courses)
-
           return NextResponse.json({ ...courses }, { status: 200 })
         }
 
@@ -399,14 +397,21 @@ const Course: CollectionConfig = {
                     equals: 'done',
                   },
                 },
+                {
+                  item_to_purchase: {
+                    equals: "course"
+                  }
+                }
               ],
             },
           })
+
 
           const course_ids = get_order.docs.map((arr: any) => arr?.item_to_purchase)
 
           const courses = await req.payload.find({
             collection: 'course',
+            depth: 0,
             user: req.user,
             where: {
               and: [

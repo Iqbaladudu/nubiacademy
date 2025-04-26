@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 
 export async function getCourses(page: number = 1) {
     try {
-        // Get authentication token from cookies
         const cookieStore = await cookies();
         const cookie = cookieStore.get("payload-token")
 

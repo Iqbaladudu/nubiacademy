@@ -11,6 +11,10 @@ export async function getProfile() {
     },
     cache: "no-store",
   });
+  const data = await res.json()
   if (!res.ok) throw new Error("Gagal mengambil profil");
-  return res.json();
+  return {
+    ...data,
+    status: res.status,
+  };
 }

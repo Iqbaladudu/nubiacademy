@@ -135,55 +135,49 @@ export default function CourseDashboard() {
     );
   }
 
-  useEffect(() => {
-    if (my_classes.isSuccess) {
-      console.log(my_classes.data)
-    }
-  }, [my_classes.isSuccess])
-
   function renderCards() {
     return my_classes.data.docs.map((arr: any, key: number) => (
       <Card
         key={key}
-        className="w-full max-w-xs bg-white/90 dark:bg-zinc-900/90 shadow-xl rounded-2xl border-0 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+        className="w-full max-w-xs bg-white dark:bg-zinc-900 shadow-lg rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.03]"
+        style={{
+          boxShadow:
+            "0 4px 24px 0 rgba(80, 112, 255, 0.07), 0 1.5px 6px 0 rgba(80, 112, 255, 0.03)",
+        }}
       >
-        <CardHeader>
+        <CardHeader className="pb-2">
           <div className="flex flex-wrap gap-2 mb-2">
             {arr.category_name && (
-              <Badge className="bg-gradient-to-r from-indigo-400 to-blue-400 text-white text-xs px-2 py-1">
+              <Badge className="bg-gradient-to-r from-indigo-400 to-blue-400 text-white text-xs px-2 py-1 shadow rounded-full">
                 {arr.category_name}
               </Badge>
             )}
             {arr.level && (
               <Badge
                 variant="outline"
-                className="border-indigo-400 text-indigo-600 dark:border-white dark:text-white text-xs px-2 py-1"
+                className="border-indigo-400 text-indigo-600 dark:border-white dark:text-white text-xs px-2 py-1 bg-white/60 dark:bg-zinc-900/60 rounded-full"
               >
                 {arr.level}
               </Badge>
             )}
           </div>
-          <CardTitle className="line-clamp-3 h-20 text-lg font-bold text-gray-800 dark:text-white">
+          <CardTitle className="line-clamp-2 h-14 text-xl font-bold text-gray-800 dark:text-white mb-1">
             {arr?.name}
           </CardTitle>
           {position === POSITION.JELAJAHI_KELAS_BARU && (
             <div className="flex items-center gap-2 mt-1 mb-2">
-              <BookText
-                className="text-indigo-500"
-                height={16}
-                width={16}
-              />
+              <BookText className="text-indigo-500" height={16} width={16} />
               <span className="text-sm text-gray-600 dark:text-gray-300">
                 {arr.modules.length} modul
               </span>
             </div>
           )}
-          <CardDescription className="h-[5rem] text-ellipsis line-clamp-4 text-gray-600 dark:text-gray-400">
+          <CardDescription className="h-[3.5rem] text-ellipsis line-clamp-3 text-gray-600 dark:text-gray-400 text-sm">
             {arr.short_description}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-2 mt-2">
             {position === POSITION.JELAJAHI_KELAS_BARU ? (
               <span className="text-indigo-600 dark:text-indigo-300 font-semibold text-base">
                 {arr.price > 0 ? (
@@ -191,7 +185,7 @@ export default function CourseDashboard() {
                 ) : (
                   <Badge
                     variant="outline"
-                    className="border-green-400 text-green-600 dark:text-green-300 dark:border-green-300"
+                    className="border-green-400 text-green-600 dark:text-green-300 dark:border-green-300 bg-white/70 dark:bg-zinc-900/70 rounded-full"
                   >
                     Gratis
                   </Badge>
@@ -199,8 +193,8 @@ export default function CourseDashboard() {
               </span>
             ) : (
               <>
-                <BookText height={24} width={24} />
-                <span className="p-0 m-0">
+                <BookText height={20} width={20} className="text-indigo-400" />
+                <span className="p-0 m-0 text-sm text-gray-700 dark:text-gray-200">
                   {arr.modules.length} modul
                 </span>
               </>
@@ -209,56 +203,47 @@ export default function CourseDashboard() {
         </CardContent>
         <CardFooter
           className={cn(
-            "flex flex-col gap-2 sm:flex-row sm:justify-between mt-2",
+            "flex flex-col gap-2 sm:flex-row sm:justify-between mt-2 pt-0"
           )}
         >
           <Button
             asChild
             size="sm"
             className={cn(
-              "rounded-lg font-semibold shadow w-full sm:w-auto transition-all duration-200 hover:scale-105",
-              position === POSITION.JELAJAHI_KELAS_BARU &&
-                arr.mine === false
-                ? "bg-indigo-600 text-white"
-                : "bg-secondary text-white",
+              "rounded-xl font-semibold shadow w-full sm:w-auto transition-all duration-200 hover:scale-105 py-3 text-base",
+              position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false
+                ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white"
+                : "bg-secondary text-white"
             )}
           >
-            {position === POSITION.JELAJAHI_KELAS_BARU &&
-            arr.mine === false ? (
-              <Link href={`/kelas/${arr.slug}/checkout`}>
-                Beli sekarang
-              </Link>
+            {position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false ? (
+              <Link href={`/kelas/${arr.slug}/checkout`}>Beli sekarang</Link>
             ) : (
-              <Link href={`${pathname + "/" + arr.slug}`}>
-                Akses sekarang
-              </Link>
+              <Link href={`${pathname + "/" + arr.slug}`}>Akses sekarang</Link>
             )}
           </Button>
-          {position === POSITION.JELAJAHI_KELAS_BARU &&
-            arr.mine === false && (
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="w-full sm:w-28 border-indigo-600 text-indigo-700 dark:text-indigo-200 rounded-lg font-normal transition-all duration-200 hover:scale-105"
-              >
-                <Link href={`${pathname + "/" + arr.slug}`}>
-                  Detail
-                </Link>
-              </Button>
-            )}
+          {position === POSITION.JELAJAHI_KELAS_BARU && arr.mine === false && (
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="w-full sm:w-28 border-indigo-600 text-indigo-700 dark:text-indigo-200 rounded-xl font-normal transition-all duration-200 hover:scale-105 py-3 text-base bg-white/70 dark:bg-zinc-900/70"
+            >
+              <Link href={`${pathname + "/" + arr.slug}`}>Detail</Link>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     ));
   }
 
   return (
-    <div className="min-h-full h-full w-full px-2 md:px-0 py-8">
+    <div className="min-h-full h-full w-full px-2 md:px-0 py-8 bg-white dark:bg-zinc-900">
       {/* Header */}
       <div className="mb-8 text-center">{HEADER[position]}</div>
 
       {/* Card Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center w-full">
         {my_classes.isLoading
           ? renderLoading()
           : my_classes.isSuccess && my_classes.data.docs.length > 0

@@ -1,30 +1,37 @@
 "use server";
 
-import { performAction } from "@/lib/server";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
 export async function getOngoingClasses(page: string | number = 1) {
-  return await performAction({
-    authenticated: async () => {
-      const cok = (await cookies()).get("payload-token");
-      try {
-        const kelas = await fetch(`${process.env.CLIENT_HOST}/api/course/ongoing?page=${page}`, {
-          headers: {
-            Authorization: `JWT ${cok?.value}`,
-          },
-        });
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get("payload-token")
 
-        if (!kelas.ok) {
-          throw new Error(`API request failed with status ${kelas.status}`);
-        }
+  try {
+    const kelas = await fetch(`${process.env.CLIENT_HOST}/api/course/ongoing?page=${page}`, {
+      headers: {
+        Authorization: cookie?.value ? `JWT ${cookie.value}` : "",
+      },
 
-        const data = await kelas.json();
-        
-        return NextResponse.json({ ...data }, { status: 200 });
-      } catch (error) {
-        return NextResponse.json({ error }, { status: 500 });
-      }
-    },
-  });
+      cache: 'no-store',
+
+    });
+
+    if (!kelas.ok) {
+      throw new Error(`API request failed with status ${kelas.status}`);
+    }
+
+    const data = await kelas.json();
+
+
+    return {
+      success: true,
+      ...data,
+    };
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    return {
+      success: false,
+      error: "Failed to fetch courses",
+    };
+  }
 }

@@ -51,48 +51,40 @@ const editProfileFormSchema = z.object({
 
 export default function Profile() {
   const [user, setUser] = React.useState<any>(null);
-  const [profile_loading, setProfileLoading] = React.useState(true);
-  const [profile_success, setProfileSuccess] = React.useState(false);
-  const [profile_error, setProfileError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    let mounted = true;
-    setProfileLoading(true);
-    getProfile()
-      .then((data) => {
-        if (mounted) {
-          setUser({ data });
-          setProfileSuccess(true);
-          setProfileError(null);
+    let ignore = false;
+    async function fetchProfile() {
+      setLoading(true);
+      try {
+        const data = await getProfile();
+        if (!ignore) {
+          setUser(data.user);
+          setError(null);
         }
-      })
-      .catch((err) => {
-        setProfileError(err.message || "Gagal mengambil profil");
-        setProfileSuccess(false);
-      })
-      .finally(() => {
-        if (mounted) setProfileLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
+      } catch (err: any) {
+        if (!ignore) setError(err.message || "Gagal mengambil profil");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    fetchProfile();
+    return () => { ignore = true; };
   }, []);
 
-  function getInitials(name?: string) {
-    if (!name) return "";
-    const parts = name.split(" ");
-    if (parts.length === 1) return parts[0][0];
-    return parts[0][0] + parts[parts.length - 1][0];
-  }
+  const getInitials = (name?: string) =>
+    name ? name.split(" ").map(part => part[0]).join("").slice(0,2).toUpperCase() : "";
 
-  function SubscriptionBadge({ status }: { status?: string }) {
+  const SubscriptionBadge = ({ status }: { status?: string }) => {
     if (!status) return null;
     let color = "bg-gray-200 text-gray-700";
     let label = status;
-    if (status === "ACTIVE" || status === "PAID") {
+    if (["ACTIVE", "PAID"].includes(status)) {
       color = "bg-green-100 text-green-700";
       label = "Aktif";
-    } else if (status === "INACTIVE" || status === "EXPIRED") {
+    } else if (["INACTIVE", "EXPIRED"].includes(status)) {
       color = "bg-red-100 text-red-700";
       label = "Tidak Aktif";
     } else if (status === "TRIAL") {
@@ -104,7 +96,7 @@ export default function Profile() {
         <BadgeCheck className="inline w-4 h-4 mr-1" /> {label}
       </Badge>
     );
-  }
+  };
 
   return (
     <motion.section
@@ -117,107 +109,114 @@ export default function Profile() {
         {/* Avatar & Nama */}
         <div className="flex flex-col items-center gap-2 w-full">
           <div className="relative flex items-center justify-center bg-indigo-100 dark:bg-indigo-900 rounded-full w-24 h-24 mb-2 shadow">
-            {user?.data?.fullname ? (
+            {user?.fullname ? (
               <span className="text-4xl font-bold text-indigo-600 dark:text-indigo-300">
-                {getInitials(user.data.fullname)}
+                {getInitials(user.fullname)}
               </span>
+            ) : loading ? (
+              <Skeleton className="w-12 h-12 rounded-full" />
             ) : (
               <User className="w-12 h-12 text-indigo-500 dark:text-indigo-300" />
             )}
           </div>
           <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-            {user?.data?.fullname || (profile_loading ? <Skeleton className="w-32 h-7 rounded" /> : "Profil Saya")}
+            {user?.fullname || (loading ? <Skeleton className="w-32 h-7 rounded" /> : "Profil Saya")}
           </h1>
           <p className="text-gray-500 dark:text-gray-300 text-center text-base">
             Pastikan data profil kamu selalu up-to-date
           </p>
-          {profile_error && (
-            <span className="text-red-500 text-sm">{profile_error}</span>
+          {error && (
+            <span className="text-red-500 text-sm">{error}</span>
           )}
           <div className="mt-2">
-            {profile_success && (
+            {!loading && (
               <EditProfileDialog
-                user={user?.data}
-                onSuccess={(newUser) => setUser({ data: newUser })}
+                user={user}
+                onSuccess={setUser}
               />
             )}
-            {profile_loading && <Skeleton className="w-28 h-10 rounded-lg" />}
+            {loading && <Skeleton className="w-28 h-10 rounded-lg" />}
           </div>
         </div>
         {/* Info utama */}
         <div className="w-full flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Username</span>
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{user?.data?.username || <Skeleton className="w-24 h-5 rounded" />}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Status Langganan</span>
-            <span className="flex items-center font-semibold text-gray-800 dark:text-gray-200">
-              {user?.data?.subscription_status || <Skeleton className="w-20 h-5 rounded" />}
-              <SubscriptionBadge status={user?.data?.subscription_status} />
-            </span>
-          </div>
+          <ProfileItem
+            isLoading={loading}
+            label="Username"
+            value={user?.username}
+          />
+          <ProfileItem
+            isLoading={loading}
+            label="Status Langganan"
+            value={
+              <span className="flex items-center">
+                {user?.subscription_status}
+                <SubscriptionBadge status={user?.subscription_status} />
+              </span>
+            }
+          />
         </div>
         {/* Divider */}
         <div className="w-full border-b border-border/30 my-2" />
         {/* Detail Profil */}
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           <ProfileItem
-            isLoading={profile_loading}
+            isLoading={loading}
             label="Email"
-            value={user?.data?.email}
+            value={user?.email}
           />
           <ProfileItem
-            isLoading={profile_loading}
+            isLoading={loading}
             label="Whatsapp"
-            value={user?.data?.phone}
+            value={user?.phone}
           />
           <ProfileItem
-            isLoading={profile_loading}
+            isLoading={loading}
             label="Provinsi"
-            value={user?.data?.province}
+            value={user?.province}
           />
           <ProfileItem
-            isLoading={profile_loading}
+            isLoading={loading}
             label="Kota"
+            value={user?.regency}
           />
         </div>
       </div>
     </motion.section>
   );
+}
 
-  function ProfileItem({
-    label,
-    value,
-    isLoading,
-    icon,
-  }: {
-    label?: string;
-    value?: React.ReactNode;
-    isLoading: boolean;
-    icon?: React.ReactNode;
-  }) {
-    return (
-      <div className="flex flex-row items-center justify-between gap-2 py-1">
-        <Label
-          className="text-indigo-700 dark:text-indigo-300 text-md font-semibold flex items-center"
-          htmlFor={label}
-        >
-          {icon}
-          {label}
-        </Label>
-        <div>
-          {!isLoading ? (
-            <span className="text-gray-700 dark:text-gray-300 font-medium break-words">
-              {value ? value : "-"}
-            </span>
-          ) : (
-            <Skeleton className="w-36 h-5 rounded" />
-          )}
-        </div>
+function ProfileItem({
+  label,
+  value,
+  isLoading,
+  icon,
+}: {
+  label?: string;
+  value?: React.ReactNode;
+  isLoading: boolean;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-row items-center justify-between gap-2 py-1">
+      <Label
+        className="text-indigo-700 dark:text-indigo-300 text-md font-semibold flex items-center"
+        htmlFor={label}
+      >
+        {icon}
+        {label}
+      </Label>
+      <div>
+        {!isLoading ? (
+          <span className="text-gray-700 dark:text-gray-300 font-medium break-words">
+            {value ?? "-"}
+          </span>
+        ) : (
+          <Skeleton className="w-36 h-5 rounded" />
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 function EditProfileDialog({
@@ -234,11 +233,11 @@ function EditProfileDialog({
   const form = useForm<z.infer<typeof editProfileFormSchema>>({
     resolver: zodResolver(editProfileFormSchema),
     defaultValues: {
-      fullname: user.fullname || "",
-      username: user.username || "",
-      phone: user.phone || "",
-      province: user.province || "",
-      regency: user.regency || "",
+      fullname: user?.fullname || "",
+      username: user?.username || "",
+      phone: user?.phone || "",
+      province: user?.province || "",
+      regency: user?.regency || "",
     },
   });
 
@@ -280,31 +279,20 @@ function EditProfileDialog({
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex flex-col gap-3 w-full"
             >
-              <ProfileItemFormEdit
-                name={TYPE_FORM.FULLNAME}
-                label="Nama Lengkap"
-                form={form}
-              />
-              <ProfileItemFormEdit
-                name={TYPE_FORM.USERNAME}
-                label="Username"
-                form={form}
-              />
-              <ProfileItemFormEdit
-                name={TYPE_FORM.PHONE}
-                label="Whatsapp"
-                form={form}
-              />
-              <ProfileItemFormEdit
-                name={TYPE_FORM.PROVINCE}
-                label="Provinsi"
-                form={form}
-              />
-              <ProfileItemFormEdit
-                name={TYPE_FORM.REGENCY}
-                label="Kota"
-                form={form}
-              />
+              {Object.entries({
+                [TYPE_FORM.FULLNAME]: "Nama Lengkap",
+                [TYPE_FORM.USERNAME]: "Username",
+                [TYPE_FORM.PHONE]: "Whatsapp",
+                [TYPE_FORM.PROVINCE]: "Provinsi",
+                [TYPE_FORM.REGENCY]: "Kota",
+              }).map(([name, label]) => (
+                <ProfileItemFormEdit
+                  key={name}
+                  name={name as TYPE_FORM}
+                  label={label}
+                  form={form}
+                />
+              ))}
               {error && (
                 <span className="text-red-500 text-sm">{error}</span>
               )}
@@ -331,7 +319,7 @@ function ProfileItemFormEdit({
   name,
   label,
 }: {
-  form: UseFormReturn<{ fullname?: string; username?: string; phone?: string; province?: string; regency?: string; }, any, { fullname?: string; username?: string; phone?: string; province?: string; regency?: string; }>;
+  form: UseFormReturn<z.infer<typeof editProfileFormSchema>>;
   name: TYPE_FORM;
   label: string;
 }) {

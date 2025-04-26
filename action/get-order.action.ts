@@ -16,7 +16,6 @@ export async function getOrderAction() {
             Authorization: `JWT ${cok?.value}`,
           },
         });
-        // Return sama persis dengan NextResponse.json({ ...order.data }, { status: 200 })
         return { ...order.data, status: 200 };
       } catch (error) {
         return { error, status: 500 };

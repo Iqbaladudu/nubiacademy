@@ -318,7 +318,7 @@ const Order: CollectionConfig = {
             }
             return data
           } catch (e) {
-            console.log(e)
+            throw Error(e)
           }
         }
       },
