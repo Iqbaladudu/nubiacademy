@@ -171,20 +171,6 @@ const CourseDetails: React.FC<CourseDetailsProps> = ({ course, slug }) => {
               <p className="text-xl sm:text-2xl font-bold text-primary whitespace-nowrap">
                 {toIDRFormat(course.price)}
               </p>
-              {/* Progress bar silabus (contoh, bisa dihilangkan jika tidak perlu) */}
-              {syllabusCount ? (
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Silabus: {syllabusCount} materi
-                  </span>
-                  <div className="relative w-24 h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="absolute left-0 top-0 h-full bg-gradient-to-r from-primary to-blue-400 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(syllabusProgress, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ) : null}
             </div>
             <Button
               size="lg"

@@ -1,12 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
 export async function getMyClasses(page: string | number = 1) {
   const cok = (await cookies()).get("payload-token");
   try {
-    const kelas = await fetch(`${process.env.CLIENT_HOST}/api/course/me?page=${page}`, {
+    const kelas = await fetch(`${process.env.ENDPOINT}/course/me?page=${page}`, {
       headers: {
         Authorization: `JWT ${cok?.value}`,
       },

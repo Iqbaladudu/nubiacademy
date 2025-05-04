@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 export async function updateProfile(data: any) {
     const cookie = await cookies();
     const cok = cookie.get("payload-token");
-    const res = await fetch(`${process.env.CLIENT_HOST}/api/me/profile`, {
+    const res = await fetch(`${process.env.ENDPOINT}/me/profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -9,7 +9,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const events = await axios
-    .get(`${process.env.LOCAL_ENDPOINT}/events`)
+    .get(`${process.env.ENDPOINT}/events`)
     .then((res) => res.data.docs);
 
   return events.map((event) => ({
@@ -25,7 +25,7 @@ export default async function Page({
   const slug = (await params).slug;
 
   const fetchEvent = await axios.get(
-    `${process.env.LOCAL_ENDPOINT}/events?where[slug][equals]=${slug}`
+    `${process.env.ENDPOINT}/events?where[slug][equals]=${slug}`
   );
 
   const eventOne = await fetchEvent.data.docs[0];

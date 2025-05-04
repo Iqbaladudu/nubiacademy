@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 export async function getProfile() {
   const cookie = await cookies();
   const cok = cookie.get("payload-token");
-  const res = await fetch(`${process.env.CLIENT_HOST}/api/users/me`, {
+  const res = await fetch(`${process.env.ENDPOINT}/users/me`, {
     headers: {
       Authorization: `JWT ${cok?.value}`,
     },

@@ -382,6 +382,7 @@ const Course: CollectionConfig = {
       handler: async (req) => {
         if (req.user) {
           const user = req.user.id
+          console.log("user", user)
           const get_order = await req.payload.find({
             collection: 'orders',
             depth: 0,
@@ -405,6 +406,8 @@ const Course: CollectionConfig = {
               ],
             },
           })
+
+          console.log("get_order", get_order)
 
 
           const course_ids = get_order.docs.map((arr: any) => arr?.item_to_purchase)

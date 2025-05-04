@@ -40,6 +40,8 @@ const Users: CollectionConfig = {
   },
   access: {
     create: () => true,
+    read: () => true,
+    update: () => true,
   },
   fields: [
     {

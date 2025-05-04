@@ -10,7 +10,7 @@ export async function checkCouponCode(couponCode: string) {
     switch (check_cookie_and_validate.status) {
         case "BERHASIL":
             try {
-                const response = await fetch(`${process.env.CLIENT_HOST}/api/check-coupon/${couponCode}`, {
+                const response = await fetch(`${process.env.ENDPOINT}/check-coupon/${couponCode}`, {
                     method: 'GET',
                     headers: {
                         Authorization: `JWT ${cok?.value}`,

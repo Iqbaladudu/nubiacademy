@@ -7,7 +7,7 @@ export async function getOngoingClasses(page: string | number = 1) {
   const cookie = cookieStore.get("payload-token")
 
   try {
-    const kelas = await fetch(`${process.env.CLIENT_HOST}/api/course/ongoing?page=${page}`, {
+    const kelas = await fetch(`${process.env.ENDPOINT}/course/ongoing?page=${page}`, {
       headers: {
         Authorization: cookie?.value ? `JWT ${cookie.value}` : "",
       },

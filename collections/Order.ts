@@ -30,23 +30,6 @@ const Order: CollectionConfig = {
     },
     {
       name: 'item_to_purchase',
-      label: 'Item yang dipesan',
-      type: 'relationship',
-      relationTo: ['course', 'events'],
-      access: {
-        read: ({ req }) => {
-          return Boolean(req.user)
-        },
-        create: ({ req: { user } }) => {
-          return Boolean(user)
-        },
-        update: ({ req: { user } }) => {
-          return Boolean(user)
-        },
-      },
-    },
-    {
-      name: 'item_to_purchase_type',
       label: 'Jenis item yang dipesan',
       type: 'select',
       required: true,
@@ -64,13 +47,13 @@ const Order: CollectionConfig = {
       required: true,
       access: {
         read: ({ req }) => {
-          return Boolean(req.user)
+          return Boolean(req.user.collection === 'admin' || req.user.collection === 'users')
         },
-        create: ({ req: { user } }) => {
-          return Boolean(user)
+        create: ({ req }) => {
+          return Boolean(req.user.collection === 'admin' || req.user.collection === 'users')
         },
-        update: ({ req: { user } }) => {
-          return Boolean(user)
+        update: ({ req }) => {
+          return Boolean(req.user.collection === 'admin' || req.user.collection === 'users')
         },
       },
     },
@@ -358,9 +341,7 @@ const Order: CollectionConfig = {
     ],
   },
   access: {
-    create: ({ req }) => {
-      return Boolean(req.user)
-    },
+    create: () => true,
     read: () => true,
     update: () => true,
     delete: () => {

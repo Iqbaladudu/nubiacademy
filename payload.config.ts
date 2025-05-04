@@ -57,8 +57,8 @@ export default buildConfig({
       },
     }),
   ],
-  csrf: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
-  cors: [process.env.SERVER_HOST!, process.env.CLIENT_HOST!],
+  csrf: [process.env.ENDPOINT!],
+  cors: [process.env.ENDPOINT!],
   collections: [
     Events,
       Benefits,

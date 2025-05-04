@@ -246,9 +246,9 @@ export default function CourseDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center w-full">
         {my_classes.isLoading
           ? renderLoading()
-          : my_classes.isSuccess && my_classes.data.docs.length > 0
+          : my_classes?.isSuccess && my_classes?.data?.docs?.length > 0
           ? renderCards()
-          : my_classes.isSuccess && renderEmpty()}
+          : my_classes?.isSuccess && renderEmpty()}
       </div>
 
       {/* Pagination */}

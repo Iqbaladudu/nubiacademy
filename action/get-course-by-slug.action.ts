@@ -8,7 +8,7 @@ export async function getCourseBySLug(slug: string) {
         const cookie = cookieStore.get("token");
 
         const response = await fetch(
-            `${process.env.CLIENT_HOST}/api/course?where[slug][equals]=${slug}`, {
+            `${process.env.ENDPOINT}/course?where[slug][equals]=${slug}`, {
                 headers: {
                     Authorization: cookie?.value ? `JWT ${cookie.value}` : "",
                 },

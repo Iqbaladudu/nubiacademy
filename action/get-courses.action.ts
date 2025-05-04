@@ -8,7 +8,7 @@ export async function getCourses(page: number = 1) {
         const cookie = cookieStore.get("payload-token")
 
         // Use fetch to call the API endpoint
-        const response = await fetch(`${process.env.CLIENT_HOST}/api/course?page=${page || 1}`, {
+        const response = await fetch(`${process.env.ENDPOINT}/course?page=${page || 1}`, {
             headers: {
                 Authorization: cookie?.value ? `JWT ${cookie.value}` : "",
             },

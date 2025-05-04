@@ -6,12 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { local } from "@/services/global";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { EyeOffIcon, EyeIcon } from "lucide-react";
+import { instance } from "@/services/global";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -31,7 +31,7 @@ export function ResetPasswordForm({ className, ...props }: UserAuthFormProps) {
   const reset_password = useMutation({
     mutationFn: ({ data, token }: { data: Inputs; token: string }) => {
       setIsLoading(true);
-      return local.post("/verify", {
+      return instance.post("/verify", {
         email: data.email,
         password: data.password,
         token: token,

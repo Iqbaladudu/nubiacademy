@@ -33,7 +33,7 @@ export async function createOrderAction(
         const formData = new FormData();
         formData.append('_payload', JSON.stringify(payload));
 
-        const response = await fetch(`${process.env.CLIENT_HOST}/api/orders`, {
+        const response = await fetch(`${process.env.ENDPOINT}/orders`, {
             method: 'POST',
             headers: {
                 Authorization: `JWT ${cok?.value}`,

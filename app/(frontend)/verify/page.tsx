@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
-import { local } from "@/services/global";
 import { useQuery } from "@tanstack/react-query";
 import { Error } from "@/components/ui/error";
 import { Loading } from "@/components/ui/loading";
 import { Success } from "@/components/ui/success";
+import { instance } from "@/services/global";
 
 export default function VerificationSuccess() {
   const searchParams = useSearchParams();
@@ -16,7 +16,7 @@ export default function VerificationSuccess() {
   const verify_email = useQuery({
     queryKey: ["verify_email", { token }],
     queryFn: async () => {
-      const response = await local.post("/verify", {
+      const response = await instance.post("/verify", {
         token: token,
       });
 

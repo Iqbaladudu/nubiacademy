@@ -174,18 +174,6 @@ export function KelasDetailContents({ slug }: { slug: string }) {
               <p className="mt-1 text-lg text-gray-700 dark:text-gray-300 font-medium">
                 {data.short_description}
               </p>
-              {/* Instruktur */}
-              <div className="flex items-center gap-3 mt-5">
-                <InstructorAvatar name={data.instructor_name || "Instruktur"} />
-                <div>
-                  <div className="font-semibold text-gray-800 dark:text-white text-base">
-                    {data.instructor_name || "Instruktur"}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Instruktur
-                  </div>
-                </div>
-              </div>
             </div>
             {/* Harga & Tombol */}
             <div className="flex flex-col items-start gap-4 min-w-[220px]">
